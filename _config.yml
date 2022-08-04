@@ -1,6 +1,6 @@
 # Site settings
 title: Hansol-Kim
-description: '한솔's 깃블로그'
+description: "한솔's 깃블로그 입니다"
 url: 'https://hansollasido.github.io'
 baseurl: ''
 # google_analytics: 'UA-XXXXXX-X'
@@ -8,12 +8,10 @@ baseurl: ''
 # disable_landing_page: true
 
 author:
-  name: '김한솔'
+  name: 'Hansol Kim'
   email: johnkims222@gmail.com
-  twitter_username: joshgerdes
-  facebook_username: joshgerdes
-  github_username:  joshgerdes
-  linkedin_username:  joshgerdes
+  facebook_username: 김한솔
+  github_username:  hansollasido
 
 defaults:
   -
