@@ -10,7 +10,6 @@ baseurl: ''
 author:
   name: 'Hansol Kim'
   email: johnkims222@gmail.com
-  facebook_username: 김한솔
   github_username:  hansollasido
 
 defaults:
