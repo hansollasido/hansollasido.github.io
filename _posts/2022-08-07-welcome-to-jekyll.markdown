@@ -1,6 +1,6 @@
 ---
 title:  "2022-08-07"
-date:   2022-08-07 15:04:23
+date:   2022-08-07 15:05:33
 categories: [자율주행자동차]
 tags: [교내]
 ---
@@ -136,8 +136,9 @@ line_detection()
 
 ### Sliding Window
 
-<iframe id="video" width="600" height="350" src="../../images/080702.mp4" frameborder="0">
-</iframe>
+<video width="100%" height="100%" controls="controls">
+  <source src="../../images/080702.mp4" type="video/mp4">
+</video>
 
 
 sliding window 방식으로 차선이 있을 시 사각형으로 표현할 수 있도록 구현하였다.
@@ -204,8 +205,9 @@ def sliding(self):
 
 차선을 sliding window로 표시하여 나타낼 수 있었다.
 
-<iframe id="video" width="600" height="350" src="../../images/080705.mp4" frameborder="0">
-</iframe>
+<video width="100%" height="100%" controls="controls">
+  <source src="../../images/080705.mp4" type="video/mp4">
+</video>
 
 ### 결론
 - 허프 변환으로 lane detection하는 것은 효과가 좋지 못했다.
