@@ -1,8 +1,8 @@
 ---
 title:  "2022-08-07"
 date:   2022-08-07 15:05:33
-categories: [자율주행자동차]
-tags: [교내]
+categories: [대회]
+tags: [자율주행자동차]
 ---
 
 ### 자율주행자동차 lane detection
@@ -140,7 +140,7 @@ line_detection()
   <source src="../../images/080702.mp4" type="video/mp4">
 </video>
 
-
+---
 sliding window 방식으로 차선이 있을 시 사각형으로 표현할 수 있도록 구현하였다.
 
 (개인적으로 sliding window 구현하는게 매우 힘들었다.... pixel 위치랑 웬만한 cv2 함수는 거의 알아야 구현가능했었다.)

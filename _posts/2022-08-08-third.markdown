@@ -1,0 +1,104 @@
+---
+title:  "2022-08-08"
+date:   2022-08-08 15:04:23
+categories: [대회]
+tags: [자율주행자동차]
+---
+
+### Kaggle 스터디를 위해 데이콘 대회 준비
+
+[여행 상품 신청 여부 예측 경진대회 - DACON][dacon] 
+대회 참가하여 EDA(데이터 분석)을 약간하였다.
+
+
+그 중 대표적인 것을 골라 설명하자면
+
+``` python
+# float64인 Age, DurationOfPitch, NumberOfFollowups
+# PreferredPropertyStar, NumberOfTrips, NumberOfChildrenVisiting, MonthlyIncome
+# 을 int64형으로 변환
+train_data2 = train_data2.astype({'Age':'int32'})
+train_data2 = train_data2.astype({'DurationOfPitch':'int32'})
+train_data2 = train_data2.astype({'NumberOfFollowups':'int32'})
+train_data2 = train_data2.astype({'PreferredPropertyStar':'int32'})
+train_data2 = train_data2.astype({'NumberOfTrips':'int32'})
+train_data2 = train_data2.astype({'NumberOfChildrenVisiting':'int32'})
+train_data2 = train_data2.astype({'MonthlyIncome':'int32'})
+train_data2
+
+```
+
+굳이 실수형을 쓰지 않아도 되는 데이터를 정수형으로 변환하고
+
+``` python
+# sklearn에서 제공하는 label encoder로 object형을 int형으로 labeling
+from sklearn import preprocessing
+label_encoder = preprocessing.LabelEncoder()
+train_data2['TypeofContact']=label_encoder.fit_transform(train_data2['TypeofContact'])
+train_data2['Occupation']=label_encoder.fit_transform(train_data2['Occupation'])
+train_data2['Gender']=label_encoder.fit_transform(train_data2['Gender'])
+train_data2['ProductPitched']=label_encoder.fit_transform(train_data2['ProductPitched'])
+train_data2['MaritalStatus']=label_encoder.fit_transform(train_data2['MaritalStatus'])
+train_data2['Designation']=label_encoder.fit_transform(train_data2['Designation'])
+train_data2
+```
+
+sklearn에서 제공하는 labeling으로 object형을 int64형으로 변환하였다.
+
+**결측치** 부분에서도 문제가 있었는데
+다양한 부분에서 결측치가 발생한 것을 볼 수 있었다.
+
+``` python
+train_data.info(null_counts=True)
+```
+![image.png](../../images/080801.png)
+
+결과화면을 통하여 굉장히 다양한 면에서 결측치가 발생했다는 것을 볼 수 있었다.
+
+`결측치를 0 또는 평균값으로 규정할 수 있지만 부정확한 대체값을 넣으면 오히려 결과가 좋지 않을 수 있어 결측치가 포함된 행은 drop 시켰다.`
+
+이렇게 간단하게 경진대회 EDA를 마쳤고 다음부터는 boxplot 상관계수 분석 등을 토대로
+데이터 분포를 확인할 예정이다.
+
+### 자율주행자동차
+
+오늘 갑자기 카메라가 리눅스에서 인지가 안되는 오류가 발생하였다.
+
+즉 webot 카메라인 /dev/device0가 리눅스에서 계속 인지가 되지 않는 오류였다.
+
+한 1시간 반? 2시간 정도 오류 해결하는 방법을 찾다가 결국에는 찾았다.
+
+`sudo modprobe v4l2loopback`
+
+loopback을 하니 device0 파일이 생성되었고 이에 roslaunch를 실행하니 정상적으로 구현되었다.
+
+<video width="100%" height="100%" controls="controls">
+  <source src="../../images/080802.mp4" type="video/mp4">
+</video>
+
+---
+
+camera에 blur를 적용하여 noise를 정제하였고 주행 영역을 표시하는 작업 또한 진행하였다.
+
+**아직 주행 가능 영역이 미완성이다. 이 부분은 추후 고칠 예정이다.**
+
+**해야할 점**
+- 중앙선, 실선, 점선을 어떻게 인지할 지 고민하고 구현해보기
+- sliding window에서 가운데 점을 늘려야할 것 같은데 어떻게 늘릴지 고민해보기
+
+### 번외
+
+오늘 수도권 물난리 났던데.... 진짜 이렇게 비내리는 건 처음이었다.
+
+천둥번개도 계속 치고.... 앞으로 계속 학교에서 늦게까지 있을텐데 걱정이 되긴 하다.
+
+<video width="100%" height="100%" controls="controls">
+  <source src="../../images/080803.mp4" type="video/mp4">
+</video>
+
+---
+
+집에 어떻게 가지? 걱정하고 있을 때 다행히 빨간버스가 있어서 타고 갔다.
+
+
+[dacon]: https://dacon.io/competitions/official/235959/overview/description

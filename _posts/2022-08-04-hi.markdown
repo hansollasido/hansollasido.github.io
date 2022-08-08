@@ -1,8 +1,8 @@
 ---
 title:  "2022-08-04"
 date:   2022-08-04 15:04:23
-categories: [AI]
-tags: [SW]
+categories: [스터디]
+tags: [테이브]
 ---
 
 ## Kaggle 스터디 진행
