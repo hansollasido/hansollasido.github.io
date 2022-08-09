@@ -18,13 +18,6 @@ tags: [자율주행자동차]
 # PreferredPropertyStar, NumberOfTrips, NumberOfChildrenVisiting, MonthlyIncome
 # 을 int64형으로 변환
 train_data2 = train_data2.astype({'Age':'int32'})
-train_data2 = train_data2.astype({'DurationOfPitch':'int32'})
-train_data2 = train_data2.astype({'NumberOfFollowups':'int32'})
-train_data2 = train_data2.astype({'PreferredPropertyStar':'int32'})
-train_data2 = train_data2.astype({'NumberOfTrips':'int32'})
-train_data2 = train_data2.astype({'NumberOfChildrenVisiting':'int32'})
-train_data2 = train_data2.astype({'MonthlyIncome':'int32'})
-train_data2
 
 ```
 
@@ -34,12 +27,7 @@ train_data2
 # sklearn에서 제공하는 label encoder로 object형을 int형으로 labeling
 from sklearn import preprocessing
 label_encoder = preprocessing.LabelEncoder()
-train_data2['TypeofContact']=label_encoder.fit_transform(train_data2['TypeofContact'])
-train_data2['Occupation']=label_encoder.fit_transform(train_data2['Occupation'])
-train_data2['Gender']=label_encoder.fit_transform(train_data2['Gender'])
-train_data2['ProductPitched']=label_encoder.fit_transform(train_data2['ProductPitched'])
-train_data2['MaritalStatus']=label_encoder.fit_transform(train_data2['MaritalStatus'])
-train_data2['Designation']=label_encoder.fit_transform(train_data2['Designation'])
+train_data2['Gender'] = label_encoder.fit_transform(train_data2['Gender'])
 train_data2
 ```
 
