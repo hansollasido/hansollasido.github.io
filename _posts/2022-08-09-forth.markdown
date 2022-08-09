@@ -1,0 +1,93 @@
+---
+title:  "2022-08-09"
+date:   2022-08-09 15:04:23
+categories: [대회]
+tags: [자율주행자동차]
+---
+
+### 파란학기 미팅
+
+오늘 지도교수님과 같이 저녁식사를 하며 파란학기 관련된 내용들을 주고받았다.
+
+맛있는 돈가스도 먹고 미팅도 하며 좋은 정보를 주고 받았다.
+
+기업 연계 프로젝트라 굉장히 기대가 된다.
+
+어서 빨리 하고 싶다는 생각이 든다!
+
+---
+
+
+### Kaggle 스터디를 위해 데이콘 대회 준비 (2)
+
+[여행 상품 신청 여부 예측 경진대회 - DACON][dacon] 
+어제 진행했던 EDA를 좀 더 진행하였다.
+
+
+``` python
+fig, axs = plt.subplots(1,2,figsize=(15,10)) # 그래프 크기 조정
+fig.suptitle('TypeofContact 분포')
+labels = [1,0]
+colors = ['#ffadad', '#ffd6a5', '#fdffb6']
+axs[0].pie( train_data2[ train_data2[ 'ProdTaken' ] == 0 ][ 'TypeofContact' ].value_counts() , colors = colors , labels=labels, autopct = "%.1f%%" )
+axs[0].set_title('ProdTaken = 0 일 때')
+axs[1].pie( train_data2[ train_data2[ 'ProdTaken' ] == 1][ 'TypeofContact' ].value_counts() , colors = colors, labels = labels, autopct = "%.1f%%")
+axs[1].set_title('ProdTaken = 1 일 때')
+plt.show()
+```
+원 그래프 그려서 분포를 확인하였다.
+
+![image.png](../../images/080901.png)
+
+
+``` python
+plt.figure(figsize=(15,6)) # 그래프 크기 조정
+g = sns.boxplot(x='ProdTaken', y='DurationOfPitch', data=train_data2, showfliers=False)
+g.set_title('DurationOfPitch별 상자그림', size = 20)
+g.set_xticklabels(g.get_xticklabels(),rotation=90)
+plt.show()
+```
+
+또한 boxplot을 토대로 데이터가 어떻게 분포하는지 시각화하였다.
+
+![image2.png](../../images/080902.png)
+
+간단한 데이터분석을 진행하였고 다음에는 머신러닝 모델을 적용할 예정이다.
+
+---
+
+### 자율주행자동차
+
+왼쪽 차선인지 실선인지 오른쪽 차선이 실선인지에 따라 따라가는 선을 다르게 하였다.
+
+예를 들면 왼쪽 차선이 실선으로 인지한다면 왼쪽 실선을 중심으로 차량을 움직이게 하였고 오른쪽 차선이 실선으로 인지한다면 오른쪽 실선을 중심으로 차량을 움직이게 한다.
+
+추가로 노이즈를 좀 더 줄이기 위해 cv2.blur의 filtersize의 크기를 키웠고 차선의 실선을 이용하여 차량이 가는 방향을 정하였다.
+
+이를 화면에 화살표로 띄워 시각화하였다.
+
+
+<video width="100%" height="100%" controls="controls">
+  <source src="../../images/080903.mp4" type="video/mp4">
+</video>
+
+---
+
+**이제 제어와 같이 해볼 시간이다. 대회까지 얼마 남지 않았다.**
+
+**해야할 점**
+- 제어까지 같이 해보며 구현해보기
+
+---
+
+### 번외
+
+오늘도 준비하느랴 늦게 끝나서 빨간 버스 타고 갔는데 여전히 비가 많이왔다. 
+
+수도권 피해가 심각하던데 다치는 사람 없이 다들 무사했으면 좋겠다.
+
+천둥번개도 계속 치고.... 앞으로 계속 학교에서 늦게까지 있을텐데 걱정이 되긴 하다.
+
+---
+
+[dacon]: https://dacon.io/competitions/official/235959/overview/description
