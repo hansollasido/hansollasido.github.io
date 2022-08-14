@@ -1,0 +1,87 @@
+---
+title:  "2022-08-14"
+date:   2022-08-14 15:04:23
+categories: [스터디]
+tags: [테이브]
+---
+
+
+### 데이콘 대회
+
+15일에 진행할 캐글 스터디를 위해 모델을 구현해 봤다.
+
+랜덤포레스트가 가장 점수가 높았다.
+
+``` python
+import time
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+start = time.time() # 시작 시간 저장
+
+# 랜덤 포레스트의 parameter 범위를 정의한다.
+RF_params = {
+    'n_estimators' : [50,100,150,200,300,500,1000],
+    'max_features' : ['auto','sqrt'],
+    'max_depth' : [8,10,12,14,16],
+    'min_samples_leaf' : [1,2,4,8],
+    'min_samples_split' : [2,3,5,10]}
+
+# GridSearchCV를 이용하여 dict에Randomforest 모델을 저장한다. 
+RF_models = {
+    'RF': GridSearchCV(
+    RandomForestClassifier(random_state=42), param_grid=RF_params, n_jobs=-1
+    ).fit(train_input, train_target).best_estimator_}
+
+print(f'걸린시간 : {np.round(time.time()-start, 3)}초') # 현재시간 - 시작시간(단위 초)
+```
+**몰랐었던 부분**
+
+scikit-learn에서 제공하는 IterativeImputer을 가지고 결측치를 쉽게 결정할 수 있었다.
+
+관련된 내용은 이 링크에서 참고하였다.
+
+
+``` python
+from sklearn.linear_model import LinearRegression
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+
+imp = IterativeImputer(estimator = LinearRegression(), 
+                       tol= 1e-10, 
+                       max_iter=30, 
+                       verbose=2, 
+                       initial_strategy='mean',
+                       imputation_order='ascending')
+
+train_data2 = pd.DataFrame(imp.fit_transform(train_data))
+test_data2 = pd.DataFrame(imp.fit_transform(test_data))
+```
+
+[MICE (Multivariate Imputation By Chained Equations)][dacon]
+
+결측치 코드를 따로 만들 필요없이 scikit-learn에서 제공하는 소스를 토대로 결측치를 대체할 수 있었다.
+
+이번 대회에서는 결측치를 어떻게 처리하냐에 따라 많이 달라질 것 같다.
+
+---
+
+
+### 자율주행자동차
+
+오늘 거의다 완성한 것을 느꼈다. 제어 부분과 라이더 부분만 더 하면 될 것 같다.
+
+카메라 부분은 여기까지 해도 될것 같다!
+
+직선 구간에서 직진하는 코드를 만들어 봐야할 것 같다.
+
+
+---
+
+**해야할 점**
+
+- 텝스 준비
+- 자율주행대회 준비
+- 캐글 스터디
+
+
+[dacon]: https://ichi.pro/ko/deiteo-seteueseo-gyeol-cheuggabs-eul-daechihaneun-mice-algolijeum-217004654686142
