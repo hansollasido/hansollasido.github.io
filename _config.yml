@@ -19,14 +19,14 @@ minimal_mistakes_skin: "plum" # "default" "air", "aqua", ...
 
 # Site Settings
 locale: "ko-KR" #"en-US"
-title: "Blog Name Here" # 상단 헤더에 보이는 블로그 명
+title: "한솔's 깃블로그" # 상단 헤더에 보이는 블로그 명
 title_separator: "&#124;"
 subtitle: # site tagline that appears below site title in masthead
-name: "your name here" # 블로그 닉네임 설정
-description: "this is my blog!" # 블로그 설명
-url: "https://github-account.github.io" # 블로그 URL
+name: "한솔라시도" # 블로그 닉네임 설정
+description: "한솔's 日記" # 블로그 설명
+url: "https://hansollasido.github.io/" # 블로그 URL
 baseurl: # the subpath of your site, e.g. "/blog"
-repository: "github-account/github-account.github.io" # GitHub Repo 이름
+repository: "hansollasido/hansollasido.github.io" # GitHub Repo 이름
 teaser: #
 
 # logo                     : # 블로그명 앞에 로고 추가하고 싶을 경우 사용
@@ -76,8 +76,8 @@ naver_site_verification:
 # Social Sharing
 twitter:
   username:
-facebook:
-  username:
+facebook: 
+  username: 
   app_id:
   publisher:
 og_image: # Open Graph/Twitter default site image
@@ -98,11 +98,11 @@ analytics:
 
 # Site Author
 author:
-  name: "your name here" # 블로그 닉네임
+  name: "한솔" # 블로그 닉네임
   avatar: "/assets/images/meee.png" # 블로그 프로필 사진
-  #   bio              : "hi all!"
-  # location         : "Seoul, Korea"
-  # email            : "youremailhere@xxxxxx.com"
+  bio              : "hi all!"
+  location         : "Suwon, Korea"
+  email            : "johnkims222@gmail.com"
 
   links: # 사이트 링크
 #     - label: "Email"
@@ -144,7 +144,7 @@ footer:
       # url:
     - label: "Instagram"
       icon: "fab fa-fw fa-instagram"
-      # url:
+      url: https://www.instagram.com/johnkims222/
 
 # Reading Files
 include:

@@ -3,17 +3,17 @@ title: "[포스팅 예시] 이곳에 제목을 입력하세요"
 excerpt: "본문의 주요 내용을 여기에 입력하세요"
 
 categories:
-  - 컴퓨터 구조
+  - Categories5
 tags:
   - [tag1, tag2]
 
-permalink: /categories1/post-name-here/
+permalink: /categories5/post-name-here-5/
 
 toc: true
 toc_sticky: true
 
-date: 2020-05-21
-last_modified_at: 2021-10-09
+date: 2022-09-23
+last_modified_at: 2022-09-23
 ---
 
 ## 🦥 본문
