@@ -1,4 +1,5 @@
-source 'https://rubygems.org'
-gem 'github-pages', group: :jekyll_plugins
+source "https://rubygems.org"
+gemspec
 
-gem "webrick", "~> 1.7"
+gem 'jekyll-admin', group: :jekyll_plugins
+gem 'jekyll-sitemap'
