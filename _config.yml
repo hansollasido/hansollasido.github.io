@@ -23,10 +23,10 @@ title: "한솔's 깃블로그" # 상단 헤더에 보이는 블로그 명
 title_separator: "&#124;"
 subtitle: # site tagline that appears below site title in masthead
 name: "한솔라시도" # 블로그 닉네임 설정
-description: "한솔's 日記" # 블로그 설명
+description: "한솔's information" # 블로그 설명
 url: "https://hansollasido.github.io/" # 블로그 URL
 baseurl: # the subpath of your site, e.g. "/blog"
-repository: "hansollasido/hansollasido.github.io" # GitHub Repo 이름
+repository: "hansollasido/comments" # GitHub Repo 이름
 teaser: #
 
 # logo                     : # 블로그명 앞에 로고 추가하고 싶을 경우 사용
@@ -55,7 +55,7 @@ reCaptcha:
   secret:
 atom_feed:
   path: # blank (default) uses feed.xml
-  hide: # true, false (default)
+  hide: true #false (default)
 search: # true, false (default)
 search_full_content: # true, false (default)
 search_provider: # google
@@ -102,12 +102,12 @@ author:
   avatar: "/assets/images/meee.png" # 블로그 프로필 사진
   bio              : "hi all!"
   location         : "Suwon, Korea"
-  email            : "johnkims222@gmail.com"
+  # email            : "johnkims222@gmail.com"
 
   links: # 사이트 링크
-#     - label: "Email"
-#       icon: "fas fa-fw fa-envelope-square"
-#       # url: "mailto:your.name@email.com"
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: "mailto:johnkims222@gmail.com"
 #     - label: "Website"
 #       icon: "fas fa-fw fa-link"
 #       # url: "https://your-website.com"
@@ -120,9 +120,9 @@ author:
 #     - label: "GitHub"
 #       icon: "fab fa-fw fa-github"
 #       url: "https://github.com/"
-#     - label: "Instagram"
-#       icon: "fab fa-fw fa-instagram"
-#       url: "https://www.instagram.com/"
+    - label: "Instagram"
+      icon: "fab fa-fw fa-instagram"
+      url: "https://www.instagram.com/johnkims222/"
 
 # Site Footer
 footer:

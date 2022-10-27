@@ -21,22 +21,22 @@ categories:
   - title: "과목"
     children:
       - title: "컴퓨터 구조"
-        url: /categories/categories1/
+        url: /categories/컴퓨터 구조/
       - title: "마이크로 컴퓨터 설계"
-        url: /categories/categories2/
+        url: /categories/마이크로 컴퓨터 설계/
       - title: "디지털 시스템 설계"
-        url: /categories/categories3/
+        url: /categories/디지털 시스템 설계/
       - title: "융합캡스톤디자인2"
-        url: /categories/categories4/
+        url: /categories/융합캡스톤디자인2/
 
   - title: "프로젝트"
     children:
       - title: "파란학기제"
-        url: /categories/categories5/
-      - title: "Categories6"
-        url: /categories/categories6/
+        url: /categories/파란학기제/
+      - title: "국민대 자율주행 자동차 대회"
+        url: /categories/국민대 자율주행 자동차 대회/
 
-  - title: "Title3"
+  - title: "일기"
     children:
-      - title: "Categories7"
-        url: /categories/categories7/
+      - title: "일기"
+        url: /categories/일기/

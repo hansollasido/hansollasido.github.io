@@ -1,9 +1,9 @@
 ---
-title: "77777"
+title: "일기"
 layout: category
-permalink: /categories/categories7/
+permalink: /categories/일기/
 author_profile: true
-taxonomy: Categories7
+taxonomy: 일기
 sidebar:
   nav: "categories"
 ---

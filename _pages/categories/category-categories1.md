@@ -1,9 +1,9 @@
 ---
-title: "11111"
+title: "컴퓨터 구조"
 layout: category
-permalink: /categories/categories1/
+permalink: /categories/컴퓨터 구조/
 author_profile: true
-taxonomy: Categories1
+taxonomy: 컴퓨터 구조
 sidebar:
   nav: "categories"
 ---
