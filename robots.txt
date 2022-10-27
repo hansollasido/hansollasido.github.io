@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
 Sitemap: https://hansollasido.github.io/sitemap.xml
