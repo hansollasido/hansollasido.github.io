@@ -1,9 +1,9 @@
 ---
-title: "33333"
+title: "파란학기제"
 layout: category
-permalink: /categories/categories3/
+permalink: /categories/파란학기제/
 author_profile: true
-taxonomy: Categories3
+taxonomy: 파란학기제
 sidebar:
   nav: "categories"
 ---
