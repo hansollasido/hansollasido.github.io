@@ -1,9 +1,9 @@
 ---
-title: "44444"
+title: "자율주행"
 layout: category
-permalink: /categories/categories4/
+permalink: /categories/자율주행/
 author_profile: true
-taxonomy: Categories4
+taxonomy: 자율주행
 sidebar:
   nav: "categories"
 ---

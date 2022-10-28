@@ -33,8 +33,8 @@ categories:
     children:
       - title: "파란학기제"
         url: /categories/파란학기제/
-      - title: "국민대 자율주행 자동차 대회"
-        url: /categories/국민대 자율주행 자동차 대회/
+      - title: "자율주행"
+        url: /categories/자율주행/
 
   - title: "일기"
     children:
