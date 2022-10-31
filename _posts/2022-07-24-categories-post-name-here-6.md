@@ -1,5 +1,5 @@
 ---
-title: "[👨‍🔧] 아주대 학습 공동체 스터디 (opencv) 2"
+title: "[👏] 아주대 학습 공동체 스터디 (opencv) 2"
 excerpt: "기본 자료형 클래스"
 
 categories:

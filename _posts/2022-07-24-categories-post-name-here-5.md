@@ -5,7 +5,7 @@ excerpt: "OpenCV 4로 배우는 컴퓨터 비전과 머신러닝"
 categories:
   - 학습공동체
 tags:
-  - [tag1, tag2]
+  - [C++, opencv]
 
 permalink: /categories5/post-name-here-5/
 
