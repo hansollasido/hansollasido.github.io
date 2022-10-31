@@ -35,6 +35,8 @@ categories:
         url: /categories/파란학기제/
       - title: "자율주행"
         url: /categories/자율주행/
+      - title: "학습공동체"
+        url: /categories/학습공동체/
 
   - title: "일기"
     children:

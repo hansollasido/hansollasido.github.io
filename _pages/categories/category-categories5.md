@@ -1,9 +1,9 @@
 ---
-title: "55555"
+title: "학습공동체"
 layout: category
-permalink: /categories/categories5/
+permalink: /categories/학습공동체/
 author_profile: true
-taxonomy: Categories5
+taxonomy: 학습공동체
 sidebar:
   nav: "categories"
 ---
