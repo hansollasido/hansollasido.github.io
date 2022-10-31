@@ -156,3 +156,38 @@ IR에서 I flag가 0인 것으로 보아 Direct address인 것을 볼 수 있네
 즉 AR은 35->457->900이라는 과정을 거치게 되는 것이죠.
 
 Bus도 여는 횟수가 많아집니다. 확실히 direct보다 손이 가는게 많네요. 속도가 느려지는 이유도 진행과정이 많아지기 때문인 것이 느껴집니다.
+
+## Instruction cycle
+
+- Fetch an instruction from memory
+- Decode the instruction
+- Read the effective address from memory (if indirect address)
+- Execute the instruction
+- (Store the result)
+
+위와 같은 cycle로 명령어를 수행합니다.
+
+1) Initially
+
+- PC is loaded with the address of the first address of instruction in the program
+
+- SC <- 0 (providing T0)
+
+- After each clock, SC incremented
+
+2) Fetch and decode phases
+
+- T0 : AR <- PC, SC <- SC + 1
+- T1 : IR <- M[AR], PC <- PC + 1, SC <- SC + 1
+- T2 : D0-D7 <- Decode IR(12-14), AR <- IR(0-11), I <- IR(15), SC <- SC + 1
+- (no branch assumed)
+
+`즉, SC에 따라서 동작하는 게 달라지게 됩니다.`
+
+<img src="../../assets/images/103101.jpg" width="450px" height="300px" title="OP code 예시" alt="OP code"><img><br/>
+
+T0 T1 T2 때 OR 게이트를 사용하여 원하는 Bus를 열고 닫습니다.
+
+아래는 flowchart 인데 다음과 같은 logic으로 구동되는 것을 볼 수 있어요.
+
+<img src="../../assets/images/103102.jpg" width="450px" height="300px" title="OP code 예시" alt="OP code"><img><br/>
