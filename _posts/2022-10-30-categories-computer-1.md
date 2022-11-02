@@ -1,5 +1,5 @@
 ---
-title: "[💻] 컴퓨터 구조"
+title: "[👏] 컴퓨터 구조"
 excerpt: "컴퓨터 구조 과목에서 들은 내용 정리"
 
 categories:
@@ -7,7 +7,7 @@ categories:
 tags:
   - [과목]
 
-permalink: /categories1/post-name-here/
+permalink: /categories1/computer-1/
 
 toc: true
 toc_sticky: true
@@ -191,3 +191,9 @@ T0 T1 T2 때 OR 게이트를 사용하여 원하는 Bus를 열고 닫습니다.
 아래는 flowchart 인데 다음과 같은 logic으로 구동되는 것을 볼 수 있어요.
 
 <img src="../../assets/images/103102.jpg" width="450px" height="300px" title="OP code 예시" alt="OP code"><img><br/>
+
+Sequential Count로 cycle을 결정하고 Fetch, Decode, Effective address를 반복합니다.
+
+- Fetch : 메모리에서 읽어 오는 것
+- Decode : Encode를 해독하는 과정
+- Effective address : 최종적으로 그 명령이 실행될 때의 주소, 주소 연산 끝에 최종적으로 피연산자가 있는 곳을 가리키는 주소

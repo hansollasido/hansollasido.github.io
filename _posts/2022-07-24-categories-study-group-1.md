@@ -7,7 +7,7 @@ categories:
 tags:
   - [C++, opencv]
 
-permalink: /categories5/post-name-here-5/
+permalink: /categories5/study-group-1/
 
 toc: true
 toc_sticky: true
