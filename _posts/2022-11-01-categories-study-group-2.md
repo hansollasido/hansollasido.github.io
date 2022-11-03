@@ -527,3 +527,288 @@ void MatOp4()
 <img src="../../assets/images/110103.png" width="450px" height="300px" title="결과" alt="OP code"><img><br/>
 
 모든 원소가 3으로 끝나는 것을 볼 수 있음
+
+### 행렬 정보 참조하기
+
+```cpp
+Mat img1 = imread("lenna.bmp");
+
+cout << "Width: " << img1.cols << endl
+cout << "Height: " << img1.rows << endl
+```
+
+영상크기가 출력됨
+
+현재 다루고 있는 영상 객체가 3채널 컬러 영상인지를 확인하려면 Mat::type() 멤버 함수를 이용
+
+그레이스케일은 CV_8UC1, 3채널 영상은 CV_8UC3
+
+```cpp
+if (img1.type() == CV_8UC1)
+	cout << "img1 is a grayscale image." << endl
+else if (img1.type() == CV_8UC3)
+	cout << "img1 is a truecolor image." << endl
+```
+
+`img1 is a truecolor image`
+
+type()로 확인할 수 있음
+
+```cpp
+static inline
+std::ostream& operator << (std::ostream& ouot, const Mat& mtx)
+```
+
+- out : C++ 표준 출력 스트림 객체
+- mtx : 출력할 행렬
+- 반환값 : C++ 표준 출력 스트림 객체의 참조
+
+```cpp
+void MatOp5()
+{
+	Mat img1 = imread("lenna.bmp");
+
+	cout << "Width: " << img1.cols << endl;
+	cout << "Height: " << img1.rows << endl;
+	cout << "Channels: " << img1.channels() << endl;
+
+	if (img1.type() == CV_8UC1)
+		cout << "img5 is a grayscale image." << endl;
+	else if (img1.type() == CV_8UC3)
+		cout << "img5 is a truecolor image." << endl;
+
+	float data[] = { 2.f, 1.414f, 3.f, 1.732f };
+	Mat mat1(2, 2, CV_32FC1, data);
+	cout << "mat1:\n" << mat1 << endl;
+}
+```
+
+<img src="../../assets/images/110307.png" width="200px" height="3200px" title="결과" alt="OP code"><img><br/>
+
+
+### 행렬 연산
+
+행렬 연산, 역행렬, 전치 행렬 등을 구할 수 있음
+
+사칙 연산 가능
+
+행렬 곱은 아래 코드와 같음
+
+```cpp
+MatExpr Mat::mul(InputArray m, double scale = 1) const;
+```
+
+- m : *this 행렬과 크기 및 타입이 같은 행렬, 또는 행렬 표현식
+- scale : 추가적으로 곱할 값
+- 반환값 : 두 행렬의 같은 위치 원소끼리 곱셈한 결과 행렬 표현식
+
+```cpp
+MatExpr Mat::inv(int method=DECOMP_LU) const;
+```
+
+- method : 역행렬 계산 방법. DECOMP_LU, DECOMP_SVD, DECOMP_EIG, DECOMP_CHOLESKY 중 하나를 지정할 수 있음
+- 반환값 : 역행렬에 대한 행렬 표현식
+
+전치행렬도 구할 수 있음
+```cpp
+MatExpr Mat::t() const;
+```
+
+- 반환값 : 전치 행렬에 대한 행렬 표현식
+
+예제 코드
+```cpp
+void MatOp6()
+{
+	float data[] = { 1, 1, 2, 3 };
+	Mat mat1(2, 2, CV_32FC1, data);
+	cout << "mat1:\n" << mat1 << endl;
+	
+	Mat mat2 = mat1.inv();
+	cout << "mat2:\n" << mat2 << endl;
+
+	cout << "mat1.t():\n" << mat1.t() << endl;
+	cout << "mat1 + 3:\n" << mat1 + 3 << endl;
+	cout << "mat1 + mat2:\n" << mat1 + mat2 << endl;
+	cout << "mat1 * mat2:\n" << mat1 * mat2 << endl;
+}
+```
+
+<img src="../../assets/images/110308.png" width="200px" height="3200px" title="결과" alt="OP code"><img><br/>
+
+### 크기 및 타입 변환 함수
+
+행렬 타입을 변경할 때 Mat::convertTo() 함수 사용
+```cpp
+void Mat::convertTo( OutputArray m, int rtype, double alpha=1, double beta=0) const;
+```
+
+- m : 출력 행렬. 만약 m 행렬이 적절한 크기와 타입이 아닌 경우 행렬 원소 데이터를 새로 할당
+- rtype : 원하는 출력 행렬의 타입, 만약 rtype이 음수이면 출력 행렬은 입력 행렬과 같은 타입을 가짐
+- alpha : 추가적으로 곱할 값
+- beta : 추가적으로 더할 값
+
+주어진 행렬의 크기 또는 채널 수를 변경하는 함수인 Mat::reshape() 함수
+```cpp
+Mat Mat::reshape(int cn, int rows=0) const;
+```
+
+- cn : 새로운 채널 수, 만약 이 값이 0이면 채널 수를 변경하지 않음
+- rows : 새로운 행의 수, 만약 이 값이 0이면 행의 개수를 변경하지 않음
+- 반환값 : 모양이 변경된 행렬을 반환함
+
+행렬의 모양을 변경시키지 않고 크기를 변경시키고 싶다면 Mat::resize() 함수를 사용
+
+```cpp
+void Mat::resize(size_t sz);
+void Mat::resize(size_t sz, const Scalar& s);
+```
+
+- sz : 새로운 행 개수
+- s : 새로 추가되는 행 원소의 초기값
+
+이미 존재하는 행렬에 원소 데이터를 추가하고 싶을 때에는 Mat::push_back() 함수 사용
+
+```cpp
+template<typename _Tp> void Mat::push_back(const _Tp& elem);
+template<typename _Tp> void Mat::push_back(const Mat_<_Tp>& elem);
+template<typename _Tp> void Mat::push_back(const std::vector<_Tp>& elem);
+void Mat::push_back(const Mat& m);
+```
+
+- elem : 행렬의 맨 마지막 행에 추가할 원소 데이터
+- m : 행렬의 맨 마지막 행에 추가할 행렬. *this와 타입과 열 개수가 같아야 함
+
+push_back 과는 반대로 행렬에서 맨 아래에 있는 행을 제거할 때는 Mat::pop_back()을 사용
+
+```cpp
+void Mat::pop_back(size_t nelems=1);
+```
+
+- nelems : 제거할 행 개수. *this 행렬의 행 개수보다 크면 안됨
+
+예제 코드
+
+```cpp
+void MatOp7()
+{
+	Mat img1 = imread("lenna.bmp", IMREAD_GRAYSCALE);
+
+	Mat img1f;
+	img1.convertTo(img1f, CV_32FC1);
+
+	uchar data1[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+	Mat mat1(3, 4, CV_8UC1, data1);
+	Mat mat2 = mat1.reshape(0, 1);
+
+	cout << "mat1:\n" << mat1 << endl;
+	cout << "mat2:\n" << mat2 << endl;
+
+	Mat mat3 = Mat::ones(1, 4, CV_8UC1) * 255;
+	mat1.push_back(mat3);
+	cout << "mat1:\n" << mat1 << endl;
+
+	mat1.resize(6, 100);
+	cout << "mat1:\n" << mat1 << endl;
+}
+```
+
+<img src="../../assets/images/110309.png" width="500px" height="500px" title="결과" alt="OP code"><img><br/>
+
+## Vec 클래스
+
+하나의 행으로만 이루어진 행렬은 행 벡터, 하나의 열로만 구성된 행렬은 열 벡터라고 부름
+
+행 벡터와 열 벡터를 합쳐서 벡터 또는 벡터 행렬이라고 부름, 즉 벡터는 같은 자료형을 가진 원소 몇 개로 구성된 데이터 형식임
+
+벡터 예제 코드
+
+```cpp
+Vec3b p1, p2(0, 0, 255);
+```
+
+p1는 (0, 0, 0), p2는 (0, 0, 255)로 생성됨
+
+p1.val[0] = 100; 을 하게 되면 p1는 (100, 0, 0)을 가짐
+
+p1[1] = 200; 으로도 바꿀 수 있음
+
+```cpp
+void VecOp()
+{
+	Vec3b p1, p2(0, 0, 255);
+	p1.val[0] = 100;
+	p1[1] = 200;
+
+	cout << "p1: " << p1 << endl;
+	cout << "p2: " << p2 << endl;
+
+}
+```
+
+<img src="../../assets/images/110310.png" width="300px" height="300px" title="결과" alt="OP code"><img><br/>
+
+
+## Scalar 클래스
+
+Mat 클래스 다음으로 자주 사용되는 클래스임
+
+4채널 이하의 영상에서 픽셀 값을 표현하는 용도로 자주 쓰임
+
+```cpp
+void ScalarOp() {
+	Scalar gray = 128;
+	cout << "gray: " << gray << endl;
+	
+	Scalar yellow(0, 255, 255);
+	cout << "yellow: " << yellow << endl;
+
+	Mat img1(256, 256, CV_8UC3, yellow);
+
+	for (int i = 0; i < 4; i++)
+		cout << yellow[i] << endl;
+}
+```
+
+<img src="../../assets/images/110311.png" width="300px" height="300px" title="결과" alt="OP code"><img><br/>
+
+## InputArray 클래스
+
+InputArray 타입의 인자를 사용하는 함수를 자주 볼 수 있음
+
+_InputArray 클래스는 다양한 타입으로부터 생성될 수 있는 인터페이스 클래스임
+
+_InputArray::getMat() 함수를 사용하여 Mat 객체 타입 형태로 변환해서 사용해야 함
+
+```cpp
+Mat _InputArray::getMat(int idx=-1) const;
+```
+
+- idx : 참조할 행 번호. idx < 0 이면 행렬 전체를 참조함
+- 반환값 : Mat 행렬 객체
+
+예제 코드
+
+```cpp
+void printMat(InputArray _mat) {
+	Mat mat = _mat.getMat();
+	cout << mat << endl;
+}
+
+void InputArrayOp() {
+	uchar data1[] = { 1, 2, 3, 4, 5, 6 };
+	Mat mat1(2, 3, CV_8U, data1);
+	printMat(mat1);
+
+	vector<float> vec1 = { 1.2f, 3.4f, -2.1f };
+	printMat(vec1);
+}
+```
+
+<img src="../../assets/images/110312.png" width="300px" height="300px" title="결과" alt="OP code"><img><br/>
+
+## OutputArray 클래스
+
+많은 opencv 함수는 영상을 입력으로 받아 영상 처리를 수행하고, 그 결과를 다시 영상으로 생성하여 반환함
+
+이 때 출력 영상을 함수의 return 구문으로 반환하는 것이 아니라 보통 OutputArray 클래스의 참조를 함수 인자로 사용하여 결과 영상을 전달함
