@@ -327,6 +327,143 @@ int main(void)
 }
 ```
 
-<img src="../../assets/images/111501.png" width="300px" height="300px" title="결과" alt="OP code"><img><br/>
+### 트랙바 사용하기
 
-## OutputArray 클래스
+```cpp
+
+void on_level_change(int pos, void* userdata) {
+	Mat img = *(Mat*)userdata;
+
+	img.setTo(pos * 16);
+	imshow("image", img);
+}
+
+
+int main(void)
+{
+	
+	Mat img = Mat::zeros(400, 400, CV_8UC1);
+
+	namedWindow("image");
+	createTrackbar("level", "image", 0, 16, on_level_change, (void*)&img);
+	imshow("image", img);
+	waitKey();
+
+	return 0;
+}
+```
+
+### 마스크 연산
+ 
+```cpp
+void mask_setTo()
+{
+	Mat src = imread("lenna.bmp", IMREAD_COLOR);
+	Mat mask = imread("mask_smile.bmp", IMREAD_GRAYSCALE);
+
+	if (src.empty() || mask.empty()) {
+		cerr << "Image load failed!" << endl;
+		return;
+	}
+
+	src.setTo(Scalar(0, 255, 255), mask);
+
+	imshow("src", src);
+	imshow("mask", mask);
+
+	waitKey();
+	destroyAllWindows();
+}
+```
+
+```cpp
+void mask_copyTo() {
+	Mat src = imread("airplane.bmp", IMREAD_COLOR);
+	Mat mask = imread("mask_plane.bmp", IMREAD_GRAYSCALE);
+	Mat dst = imread("field.bmp", IMREAD_COLOR);
+
+	if (src.empty() || mask.empty() || dst.empty()) {
+		cerr << "Image load failed!" << endl;
+		return;
+	}
+
+	src.copyTo(dst, mask);
+	imshow("dst", dst);
+	waitKey();
+	destroyAllWindows();
+}
+```
+
+### 연산 시간 측정
+
+```cpp
+void time_inverse()
+{
+	Mat src = imread("lenna.bmp", IMREAD_GRAYSCALE);
+
+	if (src.empty()) {
+		cerr << "Image load failed!" << endl;
+		return;
+	}
+
+	Mat dst(src.rows, src.cols, src.type());
+
+	TickMeter tm;
+	tm.start();
+
+	for (int j = 0; j < src.rows; j++) {
+		for (int i = 0; i < src.cols; i++) {
+			dst.at<uchar>(j, i) = 255 - src.at<uchar>(j, i);
+		}
+	}
+
+	tm.stop();
+	cout << " Image inverse took " << tm.getTimeMilli() << "ms." << endl;
+}
+```
+### 유용한 OpenCV 함수 사용법
+
+- sum()함수와 mean() 함수
+
+```cpp
+Mat img = imread("lenna.bmp", IMREAD_GRAYSCALE);
+cout << "Sum: " << (int)sum(img)[0] << endl;
+cout << "Mean: " << (int)mean(img)[0] << endl;
+```
+
+- minMaxLoc() 함수
+
+```cpp
+double minVal, maxVal;
+Point minPos, maxPos;
+minMaxLoc(img, &minVal, &maxVal, &minPos, &maxPos);
+
+cout << "minVal : " << minVal << " at " << minPos << endl;
+cout << "maxVal : " << maxVal << " at " << maxPos << endl;
+```
+
+- normalize() 함수
+
+```cpp
+Mat src = Mat_<float>({ 1, 5}, { -1.f, -0.5, 0.f, 0.5f, 1.f });
+Mat dst;
+normalize(src, dst, 0, 255, NORM_MINMAX, CV_8UC1);
+
+cout << "src: " << src << endl;
+cout << "dst: " << dst << endl;
+```
+
+- cvRound() 함수
+
+```cpp
+cout << "cvRound(2.5): " << cvRound(2.5) << endl;
+cout << "cvRound(2.51): " << cvRound(2.51) << endl;
+cout << "cvRound(3.49999): " << cvRound(3.49999) << endl;
+cout << "cvRound(3.5): " << cvRound(3.5) << endl;
+```
+
+
+
+<!-- <img src="../../assets/images/111501.png" width="300px" height="300px" title="결과" alt="OP code"><img><br/> -->
+
+<!-- ## OutputArray 클래스 -->
