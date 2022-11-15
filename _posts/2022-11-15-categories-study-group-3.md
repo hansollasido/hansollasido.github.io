@@ -175,6 +175,158 @@ void drawLines()
 }
 ```
 
+### 도형 그리기
+
+```cpp
+void drawPolys()
+{
+	Mat img(400, 400, CV_8UC3, Scalar(255, 255, 255));
+
+	rectangle(img, Rect(50, 50, 100, 50), Scalar(0, 0, 255), 2);
+	rectangle(img, Rect(50, 150, 100, 50), Scalar(0, 0, 128), -1);
+
+	circle(img, Point(300, 120), 30, Scalar(255, 255, 0), -1, LINE_AA);
+	circle(img, Point(300, 120), 60, Scalar(255, 0, 0), 3, LINE_AA);
+
+	ellipse(img, Point(120, 300), Size(60, 30), 20, 0, 270, Scalar(255, 255, 0), -1, LINE_AA);
+	ellipse(img, Point(120, 300), Size(100, 50), 20, 0, 360, Scalar(0, 255, 0), 2, LINE_AA);
+
+	vector<Point> pts;
+	pts.push_back(Point(250, 250)); pts.push_back(Point(300, 250));
+	pts.push_back(Point(300, 300)); pts.push_back(Point(350, 300));
+	pts.push_back(Point(350, 350)); pts.push_back(Point(250, 350));
+	polylines(img, pts, true, Scalar(255, 0, 255), 2);
+
+	imshow("img", img);
+	waitKey();
+
+	destroyAllWindows();
+}
+```
+### 문자열 출력하기
+
+```cpp
+
+void drawText1()
+{
+	Mat img(500, 800, CV_8UC3, Scalar(255, 255, 255));
+
+	putText(img, "FONT_HERSHEY_SIMPLEX", Point(20, 50), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 0, 255));
+	putText(img, "FONT_HERSHEY_PLAIN", Point(20, 100), FONT_HERSHEY_PLAIN, 1, Scalar(0, 0, 255));
+	putText(img, "FONT_HERSHEY_DUPLEX", Point(20, 150), FONT_HERSHEY_DUPLEX, 1, Scalar(0, 0, 255));
+	putText(img, "FONT_HERSHEY_COMPLEX", Point(20, 200), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+	putText(img, "FONT_HERSHEY_TRIPLEX", Point(20, 250), FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
+	putText(img, "FONT_HERSHEY_COMPLEX_SMALL", Point(20, 300), FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar(0, 0, 255));
+	putText(img, "FONT_HERSHEY_SCRIPT_SIMPLEX", Point(20, 350), FONT_HERSHEY_SCRIPT_SIMPLEX, 1, Scalar(0, 0, 255));
+	putText(img, "FONT_HERSHEY_SCRIPT_COMPLEX", Point(20, 400), FONT_HERSHEY_SCRIPT_COMPLEX, 1, Scalar(0, 0, 255));
+	putText(img, "FONT_HERSHEY_COMPLEX | FONT_ITALIC", Point(20, 450), FONT_HERSHEY_COMPLEX | FONT_ITALIC, 1, Scalar(0, 0, 255));
+
+	imshow("img", img);
+	waitKey();
+
+}
+
+void drawText2()
+{
+	Mat img(200, 640, CV_8UC3, Scalar(255, 255, 255));
+
+	const String text = "Hellow OpenCV";
+	int fontFace = FONT_HERSHEY_TRIPLEX;
+	double fontScale = 2.0;
+	int thickness = 1;
+
+	Size sizeText = getTextSize(text, fontFace, fontScale, thickness, 0);
+	Size sizeImg = img.size();
+
+	Point org((sizeImg.width - sizeText.width) / 2, (sizeImg.height + sizeText.height) / 2);
+	putText(img, text, org, fontFace, fontScale, Scalar(255, 0, 0), thickness);
+	rectangle(img, org, org + Point(sizeText.width, -sizeText.height), Scalar(255, 0, 0), 1);
+
+	imshow("img", img);
+	waitKey();
+
+	destroyAllWindows();
+}
+```
+
+### 이벤트 처리
+
+```cpp
+int main(void)
+{
+	Mat img = imread("lenna.bmp");
+
+	if (img.empty()) {
+		cerr << "Image load failed!" << endl;
+		return -1;
+	}
+
+	namedWindow("img");
+	imshow("img", img);
+
+	while (true) {
+		int keycode = waitKey();
+		if (keycode == 'i' || keycode == 'I') {
+			img = ~img;
+			imshow("img", img);
+		}
+		else if (keycode == 27 || keycode == 'q' || keycode == 'Q') {
+			break;
+		}
+	}
+	return 0;
+}
+```
+
+### 마우스 이벤트 처리
+
+```cpp
+
+Mat img;
+Point pt01d;
+void on_mouse(int event, int x, int y, int flags, void*);
+
+void on_mouse(int event, int x, int y, int flags, void*)
+{
+	switch (event) {
+	case EVENT_LBUTTONDOWN:
+		pt01d = Point(x, y);
+		cout << "EVENT_LBUTTONDOWN: " << x << ", " << y << endl;
+		break;
+	case EVENT_LBUTTONUP:
+		cout << "EVENT_LBUTTONUP: " << x << ", " << y << endl;
+		break;
+	case EVENT_MOUSEMOVE:
+		if (flags & EVENT_FLAG_LBUTTON) {
+			line(img, pt01d, Point(x, y), Scalar(0, 255, 255), 2);
+			imshow("img", img);
+			pt01d = Point(x, y);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+
+int main(void)
+{
+	img = imread("lenna.bmp");
+
+	if (img.empty()) {
+		cerr << "Image load failed!" << endl;
+		return -1;
+	}
+
+	namedWindow("img");
+	setMouseCallback("img", on_mouse);
+	imshow("img", img);
+	waitKey();
+
+	return 0;
+}
+```
+
 <img src="../../assets/images/111501.png" width="300px" height="300px" title="결과" alt="OP code"><img><br/>
 
 ## OutputArray 클래스
