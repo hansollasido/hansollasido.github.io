@@ -1,23 +1,31 @@
 ---
-title: "안녕하세요👋🏻 25살 김한솔입니다!"
+title: "Hanosl Kim"
 permalink: /about/
 layout: single
 comments: true
 ---
+**B.S.** Ajou *(Mar 2017 ~ Feb 2023)* 
 
-## 간단한 소개
+### About
 
-아주대 전자공학과 17학번 재학중에 있으며 현재 대학원 입시를 준비 중입니다.
+Hi, I'm Hansol Kim, still B.S. student in Ajou University and I'm going to be M.S. student in SKKU University. My Major is Electric Engineering in Ajou, and Artificial intelligence in SKKU. 
 
-인공지능, 반도체에 관심이 많으며 코딩에 자신있습니다!!
-
-하드웨어 부분이 부족하다고 느껴서 관련 과목을 수강중에 있습니다.
-
-4-2학기 막학기인데 18학점이라 되게 힘드네요... 그래도 여러가지 힘내보겠습니다.
+My research interest primarily lies in the intersection of semi-conductor and AI. 
 
 ---
 
-취미 : 롤, 운동, 깃블로그 꾸미기
+### Education
 
-MBTI : ENFP(혹은 ESFP)
+- **B.S.** Electric Engineering, Ajou University *(Mar 2017 ~ Feb 2023)*
 
+### Groups
+
+- X-stal, Ajou University
+- Tave, United Group
+
+### Awards
+
+- AWS, Deepracer championship, 최우수상
+- 아주대 파란학기, 황금뱃사공상(일등상)
+- 국민대 자율주행 자동차 대회, 우수상
+- 아주대 산학박람회, 우수상
