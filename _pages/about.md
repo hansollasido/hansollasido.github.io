@@ -1,10 +1,9 @@
 ---
-title: "Hanosl Kim"
+title: "Hansol Kim"
 permalink: /about/
 layout: single
 comments: true
 ---
-**B.S.** Ajou *(Mar 2017 ~ Feb 2023)* 
 
 ### About
 
@@ -17,6 +16,7 @@ My research interest primarily lies in the intersection of semi-conductor and AI
 ### Education
 
 - **B.S.** Electric Engineering, Ajou University *(Mar 2017 ~ Feb 2023)*
+- **M.S.** Artificial Intelligence, Sungkyunkwan University *(Feb 2023 ~ )*
 
 ### Groups
 
