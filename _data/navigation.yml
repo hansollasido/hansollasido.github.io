@@ -29,12 +29,14 @@ categories:
       - title: "융합캡스톤디자인2"
         url: /categories/융합캡스톤디자인2/
 
-  - title: "대회"
+  - title: "대회, 프로젝트 및 수상"
     children:
       - title: "파란학기제"
         url: /categories/파란학기제/
       - title: "자율주행"
         url: /categories/자율주행/
+      - title: "산학박람회"
+        url: /categories/산학박람회/
       - title: "학습공동체"
         url: /categories/학습공동체/
 
