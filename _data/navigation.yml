@@ -18,12 +18,12 @@ main:
 # sidebar navigation (categories)
 # 2022.09.24 sidebar ver2.0 : main-sub version
 categories:
-  - title: "과목"
+  - title: "공부"
     children:
       - title: "컴퓨터 구조"
         url: /categories/컴퓨터 구조/
-      - title: "마이크로 컴퓨터 설계"
-        url: /categories/마이크로 컴퓨터 설계/
+      - title: "핸즈온"
+        url: /categories/핸즈온/
       - title: "디지털 시스템 설계"
         url: /categories/디지털 시스템 설계/
       - title: "융합캡스톤디자인2"
