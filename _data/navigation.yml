@@ -40,6 +40,11 @@ categories:
       - title: "학습공동체"
         url: /categories/학습공동체/
 
+  - title: "독서"
+    children:
+      - title: "인간관계론 - 데일 카네기"
+        url: /categories/인간관계론/
+
   - title: "일기"
     children:
       - title: "일기"
