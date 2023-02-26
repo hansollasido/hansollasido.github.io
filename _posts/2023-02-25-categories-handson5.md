@@ -120,3 +120,175 @@ np.linalg.pinv(X_b).dot(y)
 
 유사역행렬은 **특잇값 분해 (singular value decomposition : SVD)** 표준 행렬 분해 기법을 사용해 계산됨. $X=U\Sigma V^T$ $\Longrightarrow$ $X^+=V\Sigma^+U^T$ 
 
+### 계산 복잡도
+
+역행렬을 계산하는 계산 복잡도는 일반적으로 $O(n^{2.4})$에서 $O(n^3)$사이임
+
+## 경사 하강법
+
+**경사 하강법(GD)** 는 최적의 해법을 찾을 수 있는 일반적인 최적화 알고리즘임
+
+그레이디언트가 감소하는 방향으로 진행함
+
+$\theta$가 임의의 값으로 시작해서(**무작위 초기화**) 비용 함수가 감소되는 방향으로 진행하여 최솟값에 수렴할 때까지 점진적으로 향상시킴
+
+**학습률**이라는 중요한 하이퍼파라미터로 결정됨
+
+<mark style='background-color: #fff5b1'>경사 하강법의 문제점</mark>
+- 무작위 초기화로 인해 **전역 최솟값**보다 **지역 최솟값**에 수렴할 수 있음
+  - 비용 함수 MSE는 **볼록 함수**이기 때문에 전역 최솟값만 있음
+- 비용 함수를 최소화하는 모델 파라미터의 조합을 찾는 일이 모델 훈련임
+  - 이를 모델의 **파라미터 공간**에서 찾는 다고 말함
+  - 모델이 가진 파라미터가 많을 수록 검색이 더 어려워짐
+
+### 배치 경사 하강법
+
+$\theta_j$가 조금 변경될 때 비용 함수가 얼마나 바뀌는지 계산해야 함
+- 이를 **편도함수**라고 함
+
+**비용 함수의 편도함수**
+
+$\frac{\partial}{\partial\theta_j}MSE(\theta)=\frac{2}{m}\sum^m_{i=1}(\theta^Tx^{(i)}-y^{(i)})x^{(i)}_j$
+
+**비용 함수의 그레이디언트 벡터**
+
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <msub>
+    <mi mathvariant="normal">&#x2207;<!-- ∇ --></mi>
+    <mi>&#x03B8;<!-- θ --></mi>
+  </msub>
+  <mi>M</mi>
+  <mi>S</mi>
+  <mi>E</mi>
+  <mo stretchy="false">(</mo>
+  <mi>&#x03B8;<!-- θ --></mi>
+  <mo stretchy="false">)</mo>
+  <mo>=</mo>
+  <mrow>
+    <mo>(</mo>
+    <mtable rowspacing="4pt" columnspacing="1em">
+      <mtr>
+        <mtd>
+          <mfrac>
+            <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+            <mrow>
+              <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+              <msub>
+                <mi>&#x03B8;<!-- θ --></mi>
+                <mn>0</mn>
+              </msub>
+            </mrow>
+          </mfrac>
+          <mi>M</mi>
+          <mi>S</mi>
+          <mi>E</mi>
+          <mo stretchy="false">(</mo>
+          <mi>&#x03B8;<!-- θ --></mi>
+          <mo stretchy="false">)</mo>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <mfrac>
+            <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+            <mrow>
+              <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+              <msub>
+                <mi>&#x03B8;<!-- θ --></mi>
+                <mn>1</mn>
+              </msub>
+            </mrow>
+          </mfrac>
+          <mi>M</mi>
+          <mi>S</mi>
+          <mi>E</mi>
+          <mo stretchy="false">(</mo>
+          <mi>&#x03B8;<!-- θ --></mi>
+          <mo stretchy="false">)</mo>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <mfrac>
+            <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+            <mrow>
+              <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+              <msub>
+                <mi>&#x03B8;<!-- θ --></mi>
+                <mn>2</mn>
+              </msub>
+            </mrow>
+          </mfrac>
+          <mi>M</mi>
+          <mi>S</mi>
+          <mi>E</mi>
+          <mo stretchy="false">(</mo>
+          <mi>&#x03B8;<!-- θ --></mi>
+          <mo stretchy="false">)</mo>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <mo>&#x22EF;<!-- ⋯ --></mo>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <mfrac>
+            <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+            <mrow>
+              <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+              <msub>
+                <mi>&#x03B8;<!-- θ --></mi>
+                <mi>n</mi>
+              </msub>
+            </mrow>
+          </mfrac>
+          <mi>M</mi>
+          <mi>S</mi>
+          <mi>E</mi>
+          <mo stretchy="false">(</mo>
+          <mi>&#x03B8;<!-- θ --></mi>
+          <mo stretchy="false">)</mo>
+        </mtd>
+      </mtr>
+    </mtable>
+    <mo>)</mo>
+  </mrow>
+  <mo>=</mo>
+  <mfrac>
+    <mn>2</mn>
+    <mi>m</mi>
+  </mfrac>
+  <msup>
+    <mi>X</mi>
+    <mi>T</mi>
+  </msup>
+  <mo stretchy="false">(</mo>
+  <mi>X</mi>
+  <mi>&#x03B8;<!-- θ --></mi>
+  <mo>&#x2212;<!-- − --></mo>
+  <mi>y</mi>
+  <mo stretchy="false">)</mo>
+</math>
+
+매 경사 하강법 스텝에서 전체 훈련 세트 X에 대해 계산함 $\Longrightarrow$ **배치 경사 하강법**
+- 매 스텝에서 훈련 데이터 전체를 사용함
+
+위로 향하는 그레이디언트 벡터가 구해지면 반대 방향인 아래로 가야함. $\theta$에서 $\nabla_\theta MSE(\theta)$를 빼야한다는 뜻임
+
+**경사 하강법 스텝**
+
+$\theta^{(next step)}=\theta-\eta\nabla_\theta MSE(\theta)$
+
+```python
+eta = 0.1 # 학습률
+n_iterations = 1000
+m = 100
+
+theta = np.random.randn(2,1) # 무작위 초기화
+
+for iteration in range(n_iterations):
+  gradients = 2/m * X_b.T.dot(X_b.dot(theta) - y)
+  theta = theta-eta*gradients
+```
