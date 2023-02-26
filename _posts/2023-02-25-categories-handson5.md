@@ -293,3 +293,57 @@ for iteration in range(n_iterations):
   theta = theta-eta*gradients
 ```
 
+<img src="../../assets/images/022602.png" width="400px" height="400px" title="OP code 예시" alt="OP code"><img><br/>
+
+왼쪽은 학습률이 낮고 오른쪽은 학습률이 너무 큼
+
+그리드 탐색을 통해 적절한 학습률을 찾음
+
+### 확률적 경사 하강법
+
+배치 경사 하강법의 가장 큰 문제는 매 스텝에서 전체 훈련 세트를 사용해 그레이디언트를 계산한다는 것임. 훈련 세트가 커지면 매우 느려지게 됨
+
+**확률적 경사 하강법**은 매 스텝에서 한 개의 샘플을 무작위로 선택하고 그 하나의 샘플에 대한 그레이디언트를 계산함
+
+배치 경사 하강법보다 훨씬 불안정함. 그러나 비용 함수가 매우 불규칙할 때 알고리즘이 지역 최솟값을 건너뛰도록 도와주므로 전역 최솟값을 찾을 가능성이 높음
+
+전역 최솟값에 다다르지 못한다는 점이 좋지 않아 처음에 학습률을 크게 하고 점차 줄이는 방식으로 알고리즘을 설계함. 이는 어닐링 과정에서 영감을 얻은 **담금질 기법** 알고리즘과 유사함
+
+매 반복에서 학습률을 결정하는 함수를 **학습 스케줄**이라고 부름
+
+```python
+n_epochs = 50
+t0, t1 = 5, 50 # 학습 스케줄 하이퍼파라미터
+
+def learning_schedule(t):
+    return t0 / (t + t1)
+
+theta = np.random.randn(2, 1) # 무작위 초기화
+
+for epoch in range(n_epochs):
+    for i in range(m):
+        random_index = np.random.randint(m)
+        xi = X_b[random_index:random_index+1]
+        yi = y[random_index:random_index+1]
+        gradients = 2 * xi.T.dot(xi.dot(theta) - yi)
+        eta = learning_schedule(epoch * m + i)
+        theta = theta - eta * gradients
+
+```
+반복되는 횟수를 **에포크**라고 함
+
+```python
+from sklearn.linear_model import SGDRegressor
+sgd_reg = SGDRegressor(max_iter=1000, tol=1e-3, penalty=None, eta0=0.1)
+sgd_reg.fit(X, y.ravel())
+sgd_reg.intercept_, sgd_reg.coef_
+```
+
+### 미니배치 경사 하강법
+
+**미니배치**라 부르는 임의의 작은 샘플 세트에 대해 그레이디언트를 계산함
+- 최적화된 하드웨어, 특히 GPU를 사용해서 얻는 성능 향상임
+
+SGD보다 덜 불규칙하게 움직임. 최솟값에 더 가까이 도달하게 될 것이지만 빠져나오기는 더 힘듦
+
+<img src="../../assets/images/022603.png" width="400px" height="400px" title="OP code 예시" alt="OP code"><img><br/>
