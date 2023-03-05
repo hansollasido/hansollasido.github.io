@@ -1,6 +1,6 @@
 ---
 title: "인간관계론 - 데일 카네기"
-excerpt: "모델 훈련"
+excerpt: "독서"
 
 categories:
   - 인간관계론 - 데일 카네기
