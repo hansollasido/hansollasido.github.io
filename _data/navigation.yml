@@ -29,6 +29,11 @@ categories:
       - title: "융합캡스톤디자인2"
         url: /categories/융합캡스톤디자인2/
 
+  - title: "논문"
+    children:
+      - title: "논문 리뷰"
+        url: /categories/논문 리뷰/
+
   - title: "대회, 프로젝트 및 수상"
     children:
       - title: "파란학기제"
