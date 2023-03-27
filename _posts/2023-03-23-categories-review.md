@@ -26,4 +26,5 @@ DETR (End-to-End Object Detection with Transformers) 논문은 ECCV (유럽 컴�
 
 개념적으로 쉽고 다른 특이한 detector처럼 특별한 라이브러리가 필요없습니다.
 
-DETR은 정확도나 run-time에서도 높은 성능을 보여주며 COCO 잘 만든 Faster-R-CNN와 대등한 수준
+DETR은 정확도나 run-time에서도 높은 성능을 보여주며 COCO dataset을 대상으로 한 Faster-R-CNN와 대등한 수준을 이룹니다.
+
