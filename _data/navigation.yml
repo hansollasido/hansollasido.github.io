@@ -50,7 +50,7 @@ categories:
       - title: "인간관계론 - 데일 카네기"
         url: /categories/인간관계론/
 
-  - title: "일기"
-    children:
-      - title: "일기"
-        url: /categories/일기/
+  # - title: "일기"
+  #   children:
+  #     - title: "일기"
+  #       url: /categories/일기/
