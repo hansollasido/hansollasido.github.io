@@ -5,7 +5,7 @@ excerpt: "End-to-End Object Detection with Transformers"
 categories:
   - 논문 리뷰
 tags:
-  - [Object Detection]
+  - [딥러닝, Object Detection]
 
 permalink: /categories9/review1/
 

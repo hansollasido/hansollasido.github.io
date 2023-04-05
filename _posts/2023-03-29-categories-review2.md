@@ -5,7 +5,7 @@ excerpt: "ImageNet Classification with Deep Convolutional Neural Networks"
 categories:
   - 논문 리뷰
 tags:
-  - [Object Detection]
+  - [딥러닝]
 
 permalink: /categories9/review2/
 
