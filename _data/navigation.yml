@@ -31,8 +31,8 @@ categories:
 
   - title: "논문"
     children:
-      - title: "논문 리뷰"
-        url: /categories/논문 리뷰/
+      - title: "컴퓨터 비전"
+        url: /categories/컴퓨터 비전/
 
   - title: "대회, 프로젝트 및 수상"
     children:
@@ -47,7 +47,7 @@ categories:
 
   - title: "독서"
     children:
-      - title: "인간관계론 - 데일 카네기"
+      - title: "인간관계론"
         url: /categories/인간관계론/
 
   # - title: "일기"

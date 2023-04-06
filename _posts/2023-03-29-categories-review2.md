@@ -3,7 +3,7 @@ title: "AlexNet 리뷰"
 excerpt: "ImageNet Classification with Deep Convolutional Neural Networks"
 
 categories:
-  - 논문 리뷰
+  - 컴퓨터 비전
 tags:
   - [딥러닝]
 

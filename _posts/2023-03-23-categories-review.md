@@ -3,7 +3,7 @@ title: "DETR 리뷰"
 excerpt: "End-to-End Object Detection with Transformers"
 
 categories:
-  - 논문 리뷰
+  - 컴퓨터 비전
 tags:
   - [딥러닝, Object Detection]
 
