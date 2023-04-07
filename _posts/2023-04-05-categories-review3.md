@@ -1,5 +1,5 @@
 ---
-title: "RCNN 리뷰"
+title: "R-CNN 리뷰"
 excerpt: "Rich feature hierarchies for accurate object detection and semantic segmentation"
 
 categories:
