@@ -44,7 +44,7 @@ image classification과 달리 object detection은 한 이미지에 여러 사�
 그래서 이 논문은 **CNN localization 문제**를 구간(region)을 나누어 인식(recognition)하게 하여 해결하였습니다. Region Proposal, 즉 이미지에서 객체가 위치한 후보 영역(Region of Interest, ROI)을 추론합니다. 원래는 이미지 전체를 통해 객체의 위치와 종류를 파악하였으나 이미지 내에서 객체가 위치할 가능성이 높은 후보 영역을 추론하였기 때문에 해당 영역에 대해서만 객체 검출을 수행합니다. 이렇게 되면 연산량과 시간 면에서 매우 효율적으로 변합니다. 
 
 <p align="center"><img src="../../assets/images/040601.jpg" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
-<center>그림 1. R-CNN 구현 과정</center>
+<center><그림 1. R-CNN 구현 과정></center>
 
 OverFeat의 sliding-window CNN 기술은 당시까지 ILSVRC2013에 가장 좋은 기술이었지만 R-CNN은 OverFeat을 능가하면서 mAP가 R-CNN은 31.4%, OverFeat은 24.3%으로 더 좋은 수치가 나온 것을 확인했습니다. 
 
@@ -67,7 +67,7 @@ localization 문제 말고도 다른 문제가 있었습니다. **labeled된 dat
 이에 R-CNN은 region proposal을 팽창시켜 227 x 227 size에 맞게끔 늘립니다. 
 
 <p align="center"><img src="../../assets/images/040701.jpg" width="400px" height="400px" title="OP code 예시" alt="OP code" ><img></p>
-<center>그림 2. CNN input size를 맞추기 위해 region proposal을 변형시키는 방법들</center>
+<center><그림 2. CNN input size를 맞추기 위해 region proposal을 변형시키는 방법들></center>
 
 위의 <그림 2>을 보았을 때 original object proposal이 (A)와 같다면 이것을 (D)로 팽창시키는 과정이 있게 됩니다. input size가 227 x 227이 된다면 이제 CNN에 적용할 수 있습니다. 
 
@@ -75,7 +75,41 @@ localization 문제 말고도 다른 문제가 있었습니다. **labeled된 dat
 
 SVM을 거쳐 최종적으로 region이 나오게 되면 이 region을 [(7) greedy non-maximum suppression](#추가설명)으로 전처리합니다.
 
-이와 같이 하면, 첫 번째로 CNN 파라미터가 모든 category 전역에 공유된다는 점과 두 번째로는 feature vector가 저차원 계산된다는 점이 있습니다. 이 두 가지 장점은 효율적인 detection이 되게끔 만듭니다.
+이와 같이 하면, 첫 번째로 CNN 파라미터가 모든 category 전역에 공유된다는 점과 두 번째로는 feature vector가 저차원 계산된다는 점이 있습니다. 이 두 가지 장점은 효율적인 detection이 되게끔 만듭니다. 특히 속도면에서 매우 효율적이죠. 계산해야할 feature 개수가 적어서 그렇습니다.
+
+#### 결과
+
+<p align="center"><img src="../../assets/images/041201.jpg" width="800px" height="400px" title="OP code 예시" alt="OP code" ><img></p>
+<center><표 1. Detection average precision (%) on VOC 2010 test></center>
+
+<표 1>을 보시면 PASCAL VOC 데이터셋에서 R-CNN이 높은 mAP를 보여주는 것을 볼 수 있습니다. 그 중에서도 Bounding-box regression (BB)가 가장 mAP가 높은데 이건 다음 [section](#bounding-box-regression-bb)에 자세히 설명해두었습니다.
+
+<p align="center"><img src="../../assets/images/041202.jpg" width="800px" height="400px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 3. mAP on ILSVRC2013 detection test set></center>
+
+다른 dataset인 ILSVRC2013 테스트 set에서도 가장 높은 mAP를 보여줍니다. 
+
+
+<p align="center"><img src="../../assets/images/041203.jpg" width="800px" height="400px" title="OP code 예시" alt="OP code" ><img></p>
+<center><표 2. Detection average precision (%) on VOC 2007 test></center>
+
+<표 2>를 보시면 R-CNN 성능에 대해 세부적으로 나와있습니다. FT는 [(8) fine-tuned](#추가설명)로 FT를 적용한 R-CNN이 더 높은 성능을 보여줍니다. 그 아래 [(9) DPM](#추가설명)은 baseline으로 R-CNN 성능을 확인하기 위한 기준 모델입니다. 전체적으로 성능이 매우 좋네요. VOC 2007 test 데이터에서도 bounding-box regression이 적용된 모델이 가장 성능이 좋은 것을 볼 수 있습니다. 
+
+
+<p align="center"><img src="../../assets/images/041204.jpg" width="800px" height="400px" title="OP code 예시" alt="OP code" ><img></p>
+<center><표 3. Detection average precision (%) on VOC 2007 test for two different CNN architecture></center>
+
+<표 3>을 보시면 AlexNet 구조를 사용한 R-CNN(T-Net)과, Simonyan과 Zisserman이 발표한 16층 구조를 사용한 R-CNN(O-Net)의 성능 차이를 볼 수 있습니다. 전체적으로 O-Net이 성능이 좋네요.
+
+이와 같은 결론을 보면, R-CNN은 이전의 모델보다 훨씬 더 빠르고 정확도가 높은 모델임을 확인할 수 있습니다. 
+
+#### Bounding-box regression (BB)
+
+
+
+
+
+#### 정리
 
 ---
 
@@ -105,9 +139,17 @@ $Precision = \frac{TP}{TP+FP} = \frac{TP}{predictions}$
 
 <center><img src="../../assets/images/040702.png" width="400px" height="200px" title="OP code 예시" alt="OP code" ></center>
 
-<center>왼쪽 그림은 선형 분류 3개, 오른쪽 그림은 SVM 분류</center>
+<center><왼쪽 그림은 선형 분류 3개, 오른쪽 그림은 SVM 분류></center>
 
 **(7) non-maximum suppression (NMS)**
 - object detection 작업에서 중복되는 bounding box를 제거하는 알고리즘 중 하나임. bounding box들 중 가장 높은 confidence score(신뢰도 점수)를 가진 box를 선택하고 다른 box들 중 이 box와 IoU(Intersection over Union) 값이 일정 threshold 이상인 것들을 제거하는 방식임.
 
 <center><img src="../../assets/images/040703.png" width="400px" height="200px" title="OP code 예시" alt="OP code" ></center>
+
+**(8) Fine-Tuned**
+- 미리 학습된 모델을 새로운 작업에 맞게 적용하기 위해 새로운 작은 데이터셋에서 추가로 학습하는 과정을 말함.
+
+**(9) DPM (Deformable Parts Model)**
+- 객체 검출 분야에서 사용되는 모델 중 하나. 
+
+
