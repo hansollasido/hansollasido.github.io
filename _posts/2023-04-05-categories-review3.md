@@ -14,7 +14,7 @@ toc: true
 toc_sticky: true
 
 date: 2023-04-05
-last_modified_at: 2023-04-05
+last_modified_at: 2023-04-13
 ---
 
 # R-CNN (Regions with CNN features)
@@ -77,6 +77,8 @@ SVM을 거쳐 최종적으로 region이 나오게 되면 이 region을 [(7) gree
 
 이와 같이 하면, 첫 번째로 CNN 파라미터가 모든 category 전역에 공유된다는 점과 두 번째로는 feature vector가 저차원 계산된다는 점이 있습니다. 이 두 가지 장점은 효율적인 detection이 되게끔 만듭니다. 특히 속도면에서 매우 효율적이죠. 계산해야할 feature 개수가 적어서 그렇습니다.
 
+---
+
 #### 결과
 
 <p align="center"><img src="../../assets/images/041201.jpg" width="800px" height="400px" title="OP code 예시" alt="OP code" ><img></p>
@@ -103,13 +105,76 @@ SVM을 거쳐 최종적으로 region이 나오게 되면 이 region을 [(7) gree
 
 이와 같은 결론을 보면, R-CNN은 이전의 모델보다 훨씬 더 빠르고 정확도가 높은 모델임을 확인할 수 있습니다. 
 
-#### Bounding-box regression (BB)
+---
 
+#### 부록
 
+##### Object proposal transformations 
 
+object proposal은 크기가 제멋대로인 image 사각형이기 때문에 227 x 227 고정된 크기의 input에 맞게끔 변경시켜줘야 합니다. 방법은 다음과 같습니다.
 
+1. 227 x 227 input 사각형에 해당 proposal을 꽉 차게 변경하여 넣습니다. 이 때 수평, 수직 비율은 변경 전과 같습니다.
+2. 사물 이외의 context(배경)을 제거합니다.
+3. 다시 227 x 227 input 사각형에 해당 proposal을 꽉 차게 변경합니다. 이 때에는 수평, 수직 비율 상관없이 기형적으로 팽창하여 가득 채우게 합니다.
+
+context padding(p)가 있고 없고에 따라서도 성능 차이가 나게 됩니다. 
+
+<p align="center"><img src="../../assets/images/040701.jpg" width="400px" height="400px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 2. CNN input size를 맞추기 위해 region proposal을 변형시키는 방법들></center>
+
+<그림 2>를 보면 각 사진별 두개의 행이 있는데 위쪽 행은 padding이 0인 경우, 아래쪽 행은 padding이 16pixel인 경우입니다. context padding은 입력 이미지 크기를 일정하게 유지하면서 객체가 이미지의 가장자리에 위치할 경우 객체가 잘리지 않도록 보장합니다. 전체적으로 context padding이 16pixel인 경우가 그렇지 않는 경웨 비해 3-5mAP 정도 성능이 좋은 것을 볼 수 있습니다. 
+
+---
+
+##### Bounding-box regression (BB)
+
+Bounding-box regression은 예측된 객체의 bounding box를 정확하게 예측하는 데 사용됩니다. 일반적으로 bounding box의 위치와 크기를 수정하는데에 사용됩니다. 
+
+<center>${(P^i,G^i)}_{i=1,...,N}$</center>
+
+여기서 $P^i$는 입력 image 위치와 크기, $G^i$는 실제(ground-truth) bounding box의 위치와 크기를 말합니다. 
+
+<center>$P^i=(P^i_x,P^i_y,P^i_w,P^i_h)$</center>
+
+<center>$G^i=(G^i_x,G^i_y,G^i_w,G^i_h)$</center>
+
+P를 G에 maping 시키는 transform을 하는 것이 목표입니다.
+
+다음과 같은 transform 식으로 ground-truth box $\hat{G}$를 예측합니다. 
+
+<center>$\hat{G}_x=P_wd_x(P)+P_x\qquad(1)$</center>
+
+<center>$\hat{G}_y=P_yd_y(P)+P_y\qquad(2)$</center>
+
+<center>$\hat{G}_w=P_w\exp (d_w(P))\qquad(3)$</center>
+
+<center>$\hat{G}_h=P_h\exp (d_h(P))\qquad(4)$</center>
+
+여기서 $d(P)$는 변형 함수입니다. $d(P)$를 선형 함수를 통해 구현하였는데 pooling layer 5인 pool5에서 입력 P의 feature을 $\phi_5(P)$라고 한다면 $d_\star(P)=w^T_{\star}\phi_5(P)$로 둘 수 있습니다. 여기서 $w_\star$은 학습가능한 가중치 파라미터이며 릿지 회귀로 이 가중치를 업데이트할 수 있습니다. 
+
+<p align="center"><img src="../../assets/images/041301.jpg" width="400px" height="400px" title="OP code 예시" alt="OP code" ><img></p>
+
+target인 $t_\star$은 다음과 같은 식으로 표현할 수 있습니다.
+
+<center>$t_x=(G_x-P_x)/P_w\qquad(6)$</center>
+
+<center>$t_y=(G_y-P_y)/P_h\qquad(7)$</center>
+
+<center>$t_w=\log(G_w/P_w)\qquad(8)$</center>
+
+<center>$t_h=\log(G_h/P_h)\qquad(9)$</center>
+
+---
 
 #### 정리
+
+중요한 R-CNN의 특징을 정리하자면 다음과 같습니다.
+
+1. AlexNet은 image classification에만 적용했다. image classification 말고도 region이 있는 object detection에 CNN을 사용하기 위해서 CNN과 region propsal을 합쳐서 만든 알고리즘이다.  
+2. object detection은 localization(지역화)가 필요하다. 이전 sliding-window으로 CNN을 적용하기에는 너무 많은 receptive field를 가지게 되고 매우 정확한 localization이 필요하여 기술적 단점이 있게 되었다. 이에 region을 나누어 인식하게 하여 해결하고 후보 영역을 추론하여 해당 영역에 대해서만 object detection이 되게끔 수행하였다. 
+3. CNN의 input 값은 고정되어 있기 때문에 무분별한 크기의 region으로 적용하기 불가능하였다. 따라서 227x227 size에 맞게 끔 region을 warp시켜 주었다. warp시키는 방법은 [부록](#object-proposal-transformations)에 자세히 설명되어 있다.
+4. ILSVRC2013 detection test set이나 VOC 2007 test set에 대해서 매우 높은 성능을 보여주었다. 
+
 
 ---
 
@@ -151,5 +216,3 @@ $Precision = \frac{TP}{TP+FP} = \frac{TP}{predictions}$
 
 **(9) DPM (Deformable Parts Model)**
 - 객체 검출 분야에서 사용되는 모델 중 하나. 
-
-
