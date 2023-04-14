@@ -1,5 +1,5 @@
 ---
-title: "컴퓨터구조설계 및 응용 2"
+title: "[컴퓨터구조설계 및 응용 2]"
 excerpt: "Representations"
 
 categories:
