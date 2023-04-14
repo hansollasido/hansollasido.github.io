@@ -99,6 +99,8 @@ Largest Value
 - Fraction: 11111...11 $\approx2$
 - $\pm2.0\times 2^{+1023}$
 
+---
+
 ##### Denormal Numbers
 
 Exponent = 000...0일 때는 hidden bit가 0임
@@ -109,6 +111,8 @@ fraction이 0일 때
 
 <center>$\mathrm{x=(-1)^S\times(0+0)\times2^{-Bias}}=\pm0.0$</center>
 
+---
+
 ##### Infinities and NaNs
 
 Exponent = 111...1일 때, Fraction = 000...0 이라면
@@ -116,3 +120,34 @@ Exponent = 111...1일 때, Fraction = 000...0 이라면
 
 Exponent = 111...1일 때, Fraction $\neq$ 000...0 이라면
 - Not a Number (NaN)
+
+---
+
+#### 퀴즈
+
+1) 동일한 bit수를 이용하여 unsigned integer와 2's complement signed integer 방식으로 표현할 수 있는 숫자의 개수는 서로 다르다. : N
+
+2) 동일한 64 bit를 이용한다고 할 때, unsigned integer로 표현할 수 있는 가장 큰 숫자가 floating point로 표현할 수 있는 가장 큰 숫자보다 크다. : N
+
+3) Single precision floating point에 비하여 double precision floating point 방식으로 절대값이 더 작은 소수를 표현할 수 있다. : Y
+
+4) Floating point 방식으로 가능한 표현 범위 내에서는 모든 숫자를 오차 없이 표현할 수 있다. : N
+
+5) 다음의 2진수로 표현된 숫자를 각각 decimal number로 나타내시오. 
+- 1001 (Unsigned Integer) : 9
+- 1010 0011 (2's complement signed integer) : -93
+- 0100 0000 1110 0000 0000 0000 0000 0000 (single-precision floating point) : 7 (1.75 x 4)
+
+6) 다음의 숫자를 32-bit floating-point format (Bias=127)의 비트열로 나타내시오.
+- -15(decimal) : 1.875 x 8 -> 1100 0001 0111 0000 0000 0000 0000 0000
+- 0010.0010 (8-bit fixed-point) : 1.125 x 2 -> 0100 0000 0001 0000 0000 0000 0000 0000
+
+---
+
+#### floating point의 중요한 점
+
+<p align="center"><img src="../../assets/images/041410.jpg" width="400px" height="400px" title="OP code 예시" alt="OP code" ><img></p>
+
+작아질수록 촘촘하게 표현가능하지만 크면 클수록 오차가 심해짐. 때문에 컴퓨터가 0.1 + 1.1 == 1.2를 계산한다면 false를 답을 내놓음. floating point로 계산시 오차가 발생하기 때문. 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/-GsrYvZoAdA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
