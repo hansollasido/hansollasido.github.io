@@ -27,9 +27,3 @@ last_modified_at: 2022-12-01
 - way point, learning rate 등 여러 parameter를 조정해가며 학습 진행
 
 - 최우수상 수상하였음
-
----
-
-### 주행영상
-
-<iframe width="700" height="400" src="../../assets/images/010801.mp4" title="2022 2 파란학기 성과발표회" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
