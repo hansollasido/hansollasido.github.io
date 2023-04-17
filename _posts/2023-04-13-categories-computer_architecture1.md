@@ -7,7 +7,7 @@ categories:
 tags:
   - [수업]
 
-permalink: /categories9/computer_architecture1/
+permalink: /categories10/computer_architecture1/
 
 use_math: true
 toc: true
