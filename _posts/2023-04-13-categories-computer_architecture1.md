@@ -123,7 +123,7 @@ CPU에 따라 CPI가 달라져서 프로그램의 성능이 달라질 수 있습
 - CPU2 : 4/(144x10^-9x10^6) = 27.8
 
 5) 두 CPU의 capacitive load와 voltage가 서로 동일할 때 전력 소모의 비율
-- 4:1 (power = CVF^2, F는 frequency)(frequency가 4배 차이 나기 때문에 4:1)
+- 4:1 (power = CV^2F, F는 frequency)(frequency가 4배 차이 나기 때문에 4:1)
 
 6) 이 프로그램이 각 CPU에서 실행될 때 에너지 소모의 비율
 - (4x20):(1x144) = 80:144
