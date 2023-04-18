@@ -1,5 +1,5 @@
 ---
-title: "[컴퓨터구조설계 및 응용 4]"
+title: "[🏀컴퓨터구조설계 및 응용 4]"
 excerpt: "Instructions: Language of the Computer"
 
 categories:

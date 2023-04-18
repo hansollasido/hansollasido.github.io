@@ -1,5 +1,5 @@
 ---
-title: "[컴퓨터구조설계 및 응용 3]"
+title: "[🥎컴퓨터구조설계 및 응용 3]"
 excerpt: "Arithmetic operations"
 
 categories:
