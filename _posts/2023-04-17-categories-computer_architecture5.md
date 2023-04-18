@@ -209,7 +209,7 @@ Instruction이 아닌 Instruction 주소값을 가리키기 때문에 64bit regi
 ### 퀴즈
 
 1) 이번주에 배운 'single-cycle datapath'에서 짧은 delay의 instruction에 대해서 비효율성이 발생하는 이유는?
-- <font color="red">가장 긴 instr에 clock interval을 맞추어야 하므로, 짧은 instr는 interval 내에 수행을 완료하고 idel한 시간 발생</font>
+- <font color="red">가장 긴 instr에 clock interval을 맞추어야 하므로, 짧은 instr는 interval 내에 수행을 완료하고 idle한 시간 발생</font>
 
 2) 한 instruction이 끝난 후 다음 instruction을 수행하기 위해 PC 값에 더하는 값이 4인 이유는?
 - <font color="red">한 instr의 크기가 32bit (4 byte)이므로 
