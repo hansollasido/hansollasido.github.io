@@ -68,9 +68,9 @@ R-CNN은 각 proposal에 CNN을 적용하기 때문에, 무수히 많은 proposa
 이에 본 논문에서는 R-CNN과 SPPnet의 단점을 개선한 새로운 학습 알고리즘을 개발하였습니다. 바로 **Fast R-CNN**입니다. Fast R-CNN은 몇 가지 장점이 있습니다.
 
 1. R-CNN, SPPnet보다 더 높은 mAP를 가집니다. 
-2. multi-task loss를 사용하여 single-stage 학습을 진행합니다.
+2. [multi-task loss (4)](#추가설명)를 사용하여 single-stage 학습을 진행합니다.
 3. 모든 network layer를 update할 수 있습니다.
-4. [feature caching (4)](#추가설명)하기 위한 disk 저장이 필요 없어집니다.
+4. [feature caching (5)](#추가설명)하기 위한 disk 저장이 필요 없어집니다.
 
 Python과 C++로 구현된 Fast R-CNN 코드를 첨부합니다. [깃허브 링크](https://github.com/rbgirshick/fast-rcnn)
 
@@ -80,10 +80,36 @@ Python과 C++로 구현된 Fast R-CNN 코드를 첨부합니다. [깃허브 링�
 
 전체 image와 proposal set을 input으로 정의합니다. 그 다음 전체 image를 여러 convolution과 pooling layer를 거쳐 conv feature map을 형성합니다. 이후 RoI pooling layer로 feature map으로 부터 feature vector을 추출합니다. 각 feature vector은 fully connected layer로 들어가게 되며 두 개의 output을 산출합니다. 
 
-output 중 하나는 object class에 대한 softmax 확률과 [catch-all background class (5)](#추가설명)을 더한 output이고 다른 하나는 네 개의 실수형 수인데, 이 수는 bounding-box의 위치를 표현합니다. 
+output 중 하나는 object class에 대한 softmax 확률과 [catch-all background class (6)](#추가설명)을 더한 output이고 다른 하나는 네 개의 실수형 수인데, 이 수는 bounding-box의 위치를 표현합니다. 
 
 <p align="center"><img src="../../assets/images/042003.jpg" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
 <center><그림 3. Fast R-CNN 구조></center>
+
+---
+
+##### RoI pooling layer
+
+RoI pooling layer는 max pooling을 사용해서 RoI에 있는 feature들을 H x W 사이즈의 작은 feature map로 변환시킵니다. 여기서 H와 W는 특정 RoI의 독립적인 하이퍼파라미터입니다. 각 RoI는 (r,c,h,w)로 정의되는데, (r,c)는 RoI의 왼쪽 상단 좌표이며, h는 높이, w는 너비를 뜻합니다. RoI max pooling은 h x w RoI를 H x W grid로 나눕니다 
+
+<p align="center"><img src="../../assets/images/042004.jpg" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 4. RoI max pooling 과정></center>
+
+이 과정은 SPPnet에 있는 [Spatial Pyramid Pooling(SPP) (7)](#추가설명) layer의 one pyramid level case와 비슷합니다.
+
+---
+
+##### pre-trained networks
+
+본 논문은 사전학습한 모델을 불러옵니다. 다섯 개의 max pooling layer와 5~13개의 convolution layer를 불러옵니다. Fast R-CNN에서 사전학습을 진행할 때 3가지 변형이 일어납니다. 
+
+1. 마지막 max pooling은 H와 W로 setting된 RoI pooling layer로 대체됩니다. 
+2. 마지막 fully connected layer와 softmax는 두개의 sibling layer로 대체됩니다.
+3. network가 이미지 리스트와 RoI 리스트를 입력 data로 취하기 위해 수정됩니다. 
+
+##### Fine-tuning for detection
+
+
+
 
 
 ---
@@ -106,10 +132,17 @@ output 중 하나는 object class에 대한 softmax 확률과 [catch-all backgro
 
 **(3) SPPnets**
 - Spatial Pyramid Pooling Network의 약자로, 기존의 CNN에서 발생하는 문제점 중 하나인 입력 크기가 일정해야 한다는 문제를 해결하기 위해 제안됨. SPPnet은 고정된 크기의 입력 이미지에서 Spatial Pyramid Pooling을 사용하여, 다양한 크기의 이미지에 대해서도 효과적으로 작동할 수 있도록 설계됨. 
-  - Spatial Pyramid Pooling은 입력 이미지를 여러 개의 크기와 비율로 나누어 각 영역에서 최대 풀링 연산을 수행하여, 각 영역에서 추출된 특징을 결합함.
 
-**(4) Feature caching**
+**(4) multi-task loss**
+- multi-task learning 작업에서 손실 함수 중 하나로, 각 작업에 대한 손실 함수를 결합하여 전체 손실 함수를 정의하는 방법.
+
+**(5) Feature caching**
 - 모델의 특징 맵(feature map)을 미리 계산하여 저장해놓는 기법. 입력 이미지를 전체적으로 처리하기 보다는 작은 영역들로 나누어서 처리함. 각 영역에 대한 특징 맵을 미리 계산해서 저장해놓기 때문에, disk storage가 필요하게 됨. 
 
-**(5) catch-all background class**
+**(6) catch-all background class**
 - object detection에서 사용되는 클래스 중 하나. 단순한 background class와 다르게 모든 객체가 아닌 부분을 나타냄. 보통 객체 검출 작업에서 입력 이미지에 존재하는 모든 객체를 각각의 클래스로 지정하고, 이외의 부분은 배경 클래스로 지정함. 하지만 모든 객체를 미리 지정하지 않고 모르는 객체를 일괄적으로 처리하기 위해 catch-all background class를 사용함. 
+
+**(7) Spatial Pyramid Pooling(SPP)**
+<p align="center"><img src="../../assets/images/042005.png" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
+<center></center>
+- bins 개수에 맞게 grid를 나누어서 pooling을 진행. 이를 filter 개수만큼 진행하므로 SPP layer의 출력 크기는 k x M이 됨. k는 convolution layer의 출력 feature map의 filter 수이고 M은 사전에 설정한 bin의 수임. feature map의 크기에 상관없이 bin과 feature map의 filter 수로 출력 차원을 계산하므로 고정된 차원 벡터를 가지게 됨.
