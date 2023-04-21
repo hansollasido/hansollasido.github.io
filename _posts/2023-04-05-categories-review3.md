@@ -5,7 +5,7 @@ excerpt: "Rich feature hierarchies for accurate object detection and semantic se
 categories:
   - 컴퓨터 비전
 tags:
-  - [딥러닝]
+  - [딥러닝, 논문 리뷰, Object Detection]
 
 permalink: /categories9/review3/
 

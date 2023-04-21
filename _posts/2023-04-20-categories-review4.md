@@ -5,7 +5,7 @@ excerpt: "Fast R-CNN"
 categories:
   - 컴퓨터 비전
 tags:
-  - [딥러닝]
+  - [딥러닝, 논문 리뷰, Object Detection]
 
 permalink: /categories9/review4/
 
@@ -19,7 +19,7 @@ last_modified_at: 2023-04-21
 
 # Fast R-CNN
 
-R-CNN 논문 리뷰를 먼저 보시는 것을 추천드립니다!!
+[R-CNN](https://hansollasido.github.io/categories9/review3/) 논문 리뷰를 먼저 보시는 것을 추천드립니다!!
 
 #### 간단한 소개
 

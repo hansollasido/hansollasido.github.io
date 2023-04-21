@@ -35,6 +35,10 @@ categories:
     children:
       - title: "컴퓨터 비전"
         url: /categories/컴퓨터 비전/
+      - title: "AI 가속기"
+        url: /categories/AI 가속기/
+      - title: "SoC, NoC"
+        ulr: /categories/chip/
 
   - title: "대회, 프로젝트 및 수상"
     children:
