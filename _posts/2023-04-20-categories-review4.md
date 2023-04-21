@@ -49,17 +49,21 @@ Region-based Convolutional Network(R-CNN)은 object detection에서 Convolution 
 2. 학습이 공간상, 시간상 많은 소모가 필요하다는 점
 3. detection하는 속도가 느림
 
+<p align="center"><img src="../../assets/images/042106.jpg" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 1. R-CNN></center>
+
+
 R-CNN은 Convolution Network가 계산한 값을 공유하지 않고 진행하기 때문에, 느립니다. 이에 [SPPnets (3)](#추가설명)이 도입되어 계산한 값을 공유하여 속도를 높였습니다. 
 
 SPPnet은 CNN 구조가 고정된 입력 이미지 크기를 입력으로 취하는 데에서 발생한 문제점을 개선하기 위해 고안되었습니다. 특히 R-CNN에서는 227x227 input 사이즈를 위해 warp시켜 이미지를 휘게 만드는데, 이와 같은 warp를 진행하면 전체 이미지 정보가 손실되어 계산한 값이 공유가 안되고 정보가 변형이 된다는 문제가 발생합니다. 
 
 <p align="center"><img src="../../assets/images/042001.png" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
-<center><그림 1. crop/warp 제거></center>
+<center><그림 2. crop/warp 제거></center>
 
 고정된 input 사이즈가 필요한 부분은 사실상 Convolution layer가 아닌 Fully connected layer입니다. 따라서 SPPnet은 Spatial Pyramid Pooling layer를 추가하여 임의의 사이즈로 입력을 취할 수 있게 만들어줍니다. 
 
 <p align="center"><img src="../../assets/images/042002.png" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
-<center><그림 2. R-CNN, SPP-net 비교></center>
+<center><그림 3. R-CNN, SPP-net 비교></center>
 
 R-CNN은 각 proposal에 CNN을 적용하기 때문에, 무수히 많은 proposal을 CNN에 적용시켜 많은 시간이 소요됩니다. 하지만 SPPnet은 CNN을 이미지에 한 번만 적용하여 속도가 빠릅니다. 즉, input image 전체에 대한 Convolution을 진행하기 때문에 계산한 값이 공유된다는 점이 SPPnet의 장점입니다. 
 
@@ -83,7 +87,7 @@ Python과 C++로 구현된 Fast R-CNN 코드를 첨부합니다. [깃허브 링�
 output 중 하나는 object class에 대한 softmax 확률과 [catch-all background class (6)](#추가설명)을 더한 output이고 다른 하나는 네 개의 실수형 수인데, 이 수는 bounding-box의 위치를 표현합니다. 
 
 <p align="center"><img src="../../assets/images/042003.jpg" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
-<center><그림 3. Fast R-CNN 구조></center>
+<center><그림 4. Fast R-CNN 구조></center>
 
 ---
 
@@ -92,7 +96,7 @@ output 중 하나는 object class에 대한 softmax 확률과 [catch-all backgro
 RoI pooling layer는 max pooling을 사용해서 RoI에 있는 feature들을 H x W 사이즈의 작은 feature map로 변환시킵니다. 여기서 H와 W는 특정 RoI의 독립적인 하이퍼파라미터입니다. 각 RoI는 (r,c,h,w)로 정의되는데, (r,c)는 RoI의 왼쪽 상단 좌표이며, h는 높이, w는 너비를 뜻합니다. RoI max pooling은 h x w RoI를 H x W grid로 나눕니다 
 
 <p align="center"><img src="../../assets/images/042004.jpg" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
-<center><그림 4. RoI max pooling 과정></center>
+<center><그림 5. RoI max pooling 과정></center>
 
 이 과정은 SPPnet에 있는 [Spatial Pyramid Pooling(SPP) (7)](#추가설명) layer의 one pyramid level case와 비슷합니다.
 
@@ -103,7 +107,7 @@ RoI pooling layer는 max pooling을 사용해서 RoI에 있는 feature들을 H x
 ##### single-stage pipeline
 
 <p align="center"><img src="../../assets/images/042101.png" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
-<center><그림 5. Fast R-CNN 구조(2)></center>
+<center><그림 6. Fast R-CNN 구조(2)></center>
 
 R-CNN과 SPPnet의 단점은 multi-stage라는 점입니다. 모델을 3가지를 따로 학습해야했던 문제로, 시간이 오래걸린다는 점입니다. R-CNN은 CNN을 통과한 후, 각각 서로 다른 모델인 SVM(classification), bounding box regression(localization)으로 들어가 계산한 값이 공유되지 않았습니다.
 
@@ -126,7 +130,7 @@ R-CNN과 SPPnet의 단점은 multi-stage라는 점입니다. 모델을 3가지�
 
 모두 mAP가 높다고는 볼 수 없지만, Fast R-CNN이 대체적으로 mAP가 높은 것을 볼 수 있습니다.
 
-<p align="center"><img src="../../assets/images/042105.jpg" width="800px" height="800px" title="OP code 예시" alt="OP code" ><img></p>
+<p align="center"><img src="../../assets/images/042105.jpg" width="500px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
 <center><표 4. Runtime></center>
 
 Runtime을 보면 Fast R-CNN이 R-CNN보다 더 빠른 것을 볼 수 있습니다. 심지어 SPPnet보다도 좋아보이네요. 
