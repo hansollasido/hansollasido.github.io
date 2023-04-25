@@ -71,15 +71,35 @@ RPN은 어느 size의 image든 그 image를 input으로 받고 output으로 사�
 
 ---
 
-###### Anchors
+##### Anchors
 
 <p align="center"><img src="../../assets/images/042110.png" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
 <center><그림 4. Anchor 생성></center>
 
-VGG 모델을 사용했다고 가정하고 h x w x 512의 input이 들어갔다고 생각해보겠습니다. 이 때 RPN에서 n x n(논문에서는 n = 3) convolution을 진행한 뒤, 두개의 sibling 1x1 convolution layer를 거칩니다. 이 때, 사용하는 bounding box 기법이 anchor 입니다. anchor은 <그림 4>처럼 scale과 비율을 정해, 해당 픽셀에서 k개의 bounding box를 만듭니다. 
+VGG 모델을 사용했다고 가정하고 h x w x 512의 input이 들어갔다고 생각해보겠습니다. RPN에서 n x n(논문에서는 n = 3) convolution을 진행한 뒤, 두개의 sibling 1x1 convolution layer를 거칩니다. 이 때, 사용하는 bounding box 기법이 anchor 입니다. anchor은 <그림 4>처럼 scale과 비율을 정해, 해당 픽셀에서 k개의 bounding box를 만듭니다. 
 
-<p align="center"><img src="../../assets/images/042111.png" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<p align="center"><img src="../../assets/images/042111.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
 <center><그림 5. Anchor 생성(2)></center>
+
+---
+
+##### Classification & Box Regression
+
+Anchor들을 생성하여 해당 anchor에 대한 두 개의 layer를 만듭니다. 하나는 classification layer, 다른 하나는 regression layer입니다. classification layer은 해당 anchor에 객체가 존재하는 지에 대한 여부를 나타낸 것으로, 2개의 size를 가집니다. regression layer은 anchor box가 ground-truth box와 잘 맞도록 하는 layer입니다. box의 center의 x,y위치와 width, height를 가져 총 4개의 size를 가집니다.
+
+<p align="center"><img src="../../assets/images/042501.jpg" width="300px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 6. Cls layer와 Reg layer></center>
+
+Classification layer와 Regression layer를 각각 거치면 Feature map 사이즈는 각각 hxwx2x9(객체 존재 여부), hxwx4x9(box위치와 너비, 높이)가 됩니다. 이를 활용하여 Region Proposal을 만들고 RoI Pooling을 거쳐 7x7x512의 feature map이 만들어지죠. 
+
+---
+
+#### Fast R-CNN
+
+RPN을 거쳐 Region proposal을 만들고 RoI pooling으로 7x7x512 Feature map을 만들었으면 이를 Fast R-CNN의 input으로 넣습니다. Fast R-CNN을 거쳐 Non Maximum Suppression을 거쳐 object에 대한 최종 classifcation과 bounding box를 산출합니다.
+
+
+
 
 
 
