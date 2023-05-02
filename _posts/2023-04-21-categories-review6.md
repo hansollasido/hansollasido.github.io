@@ -17,7 +17,7 @@ date: 2023-05-01
 last_modified_at: 2023-05-01
 ---
 
-# 작성중(4/21)
+# 작성중(5/2)
 
 # Object Detection-Based Video Retargeting With Spatial-Temporal Consistency
 
@@ -55,6 +55,39 @@ Saliency 기법과 달리 Object Detection을 기반으로 한 기법은 object�
 
 RoI는 object detection을 통해 이뤄지기 때문에, 에너지 최적화 기법처럼 추가적인 전처리가 필요 없게 됩니다. 
 
+---
+
+### 방법
+
+
+<p align="center"><img src="../../assets/images/050204.jpg" width="700px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 3. 방법></center>
+
+첫 번째로, object detection으로 input video에 대한 사물 인지를 진행합니다. 이 때 object detection은 yolov3로 진행하며 output feature map으로는 location, size, class가 있습니다. 이 bounding box는 RoI로 동작하며 합니다. 
+
+<그림 3>과 같이 object detection으로 RoI를 지정하였으면 이 RoI값을 1-D 수직으로 영사하여 값을 얻습니다. <그림 3>의 (c)를 보면 수직으로 투영하여 RoI가 있는 x 위치는 1로 없는 x위치는 0으로 만들었습니다.
+
+
+<center>$ m[x] = \begin{cases} 1 & \mbox{if} \ x \in x_{object} 
+\\ 0 & \mbox{else}
+\end{cases} , x = 1, 2, \cdots, W, $</center>
+
+여기서 $W$는 input video의 너비 사이즈입니다. 위의 식처럼, 중요한 사물이 있다라고 생각되는 region은 1로 아닌 구역은 0으로 만듭니다. 중요한 사물은 일반적으로 사람, 동물 등이 있죠. 
+
+이제 scaling ratio map인 $S[x]$를 정의할 차례입니다. 
+
+<center>$ S[x] = \begin{cases} 1 & \mbox{if} \ x \in x_{object}
+\\ \alpha & \mbox{else} \end{cases} , x = 1,2,\cdots,W,W'=\sum^W_{x=1}S[x],$
+</center>
+
+
+<center>$\alpha=\frac{W'-W+n(x_{object})}{n(x_{object})}, $</center>
+
+여기서 $W'$는 target width로 변경할 이미지 너비이고, n(A)는 A의 구성요소 개수입니다. $n(x_{object})$는 그러면 object가 있는 x의 개수를 의미하겠네요. object가 있는 x 위치에는 1, 아니면 $\alpha$로 scaling ratio를 정의합니다. 각 component에 scaling ratio를 더하면 image는 재구성되어 위치하게 됩니다. <그림 3>의 (e)처럼요. 하지만 그림을 보시면 hole이 생겨 검은색 선이 생기게 됩니다. 이런 경우에는 [directional interpolation (6)](#추가설명)을 적용하여 content를 채웁니다. 
+
+이런식으로 적용하면 <그림 3>의 (f)처럼 완전한 모양을 갖출 수 있습니다. 
+
+
 --- 
 
 ## 참고자료
@@ -85,3 +118,6 @@ RoI는 object detection을 통해 이뤄지기 때문에, 에너지 최적화 �
 
 **(5) Siamese Network**
 - 비교 분석을 위해 두 개의 입력을 받는 뉴럴 네트워크. 두 입력 사이의 유사성을 계산하기 위해 설계됨.
+
+**(6) Directional interpolation (방향성 보간)**
+- 객체의 움직임 방향을 기반으로 보간을 진행. 
