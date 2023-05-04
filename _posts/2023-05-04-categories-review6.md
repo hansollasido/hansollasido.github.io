@@ -17,12 +17,6 @@ date: 2023-05-01
 last_modified_at: 2023-05-01
 ---
 
-# 작성중(5/2)
-
-# Object Detection-Based Video Retargeting With Spatial-Temporal Consistency
-
----
-
 ### 간단한 소개
 
 본 논문은 Object Detection (사물 인지)를 기반으로 한, deep neural network를 통해 [video retargeting (1)](#추가설명) 하는 기법을 얘기하고 있습니다. 
