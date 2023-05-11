@@ -17,8 +17,6 @@ date: 2023-04-21
 last_modified_at: 2023-04-21
 ---
 
-# 작성중(5/4)
-
 # Fast R-CNN 
 
 [R-CNN](https://hansollasido.github.io/categories9/review3/), [Fast R-CNN](https://hansollasido.github.io/categories9/review4/) 논문 리뷰를 먼저 보시는 것을 추천드립니다!!
@@ -98,10 +96,24 @@ Classification layer와 Regression layer를 각각 거치면 Feature map 사이�
 
 RPN을 거쳐 Region proposal을 만들고 RoI pooling으로 7x7x512 Feature map을 만들었으면 이를 Fast R-CNN의 input으로 넣습니다. Fast R-CNN을 거쳐 Non Maximum Suppression을 거쳐 object에 대한 최종 classifcation과 bounding box를 산출합니다.
 
+---
 
+#### 결과
 
+결과는 다음과 같습니다. 
 
+<p align="center"><img src="../../assets/images/051101.png" width="600px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 7. Faster R-CNN과 Fast R-CNN 비교></center>
 
+region proposal을 만드는 부분에서 시간이 1510 -> 10초로 감소된 것을 볼 수 있네요. Region Proposal Network의 효과가 나오는 것 같습니다. 
+
+<p align="center"><img src="../../assets/images/051102.png" width="600px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 8. R-CNN, Fast R-CNN, Faster R-CNN></center>
+
+<p align="center"><img src="../../assets/images/051103.png" width="600px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 9. R-CNN, Fast R-CNN, Faster R-CNN 성능 정리></center>
+
+R-CNN이 점차 발전되는 것을 볼 수 있네요!
 
 ---
 
