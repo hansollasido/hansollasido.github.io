@@ -31,6 +31,8 @@ last_modified_at: 2023-05-11
 <center><그림 1. Instance segmentation></center>
 
 Instance segmentation을 위한 framework를 Faster R-CNN에 병렬적으로 붙인 것이 Mask R-CNN인데요. 해당 Network가 어떻게 적용되는지 알아보겠습니다.
+  
+
 
 ---
 
