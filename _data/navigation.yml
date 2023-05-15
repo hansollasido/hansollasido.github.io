@@ -28,8 +28,10 @@ categories:
         url: /categories/디지털 시스템 설계/
       - title: "융합캡스톤디자인2"
         url: /categories/융합캡스톤디자인2/
-      - title: "컴퓨터구조설계"
-        url: /categories/컴퓨터구조설계/
+      - title: "컴구설"
+        url: /categories/컴구설/
+      - title: "CXL"
+        url: /categories/cxl/
 
   - title: "논문"
     children:

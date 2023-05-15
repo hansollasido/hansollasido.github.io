@@ -3,7 +3,7 @@ title: "[🏈컴퓨터구조설계 및 응용 6]"
 excerpt: "Pipeline"
 
 categories:
-  - 컴퓨터구조설계
+  - 컴구설
 tags:
   - [수업]
 
