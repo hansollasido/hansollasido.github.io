@@ -7,7 +7,7 @@ categories:
 tags:
   - [과제]
 
-permalink: /categories10/cxl1/
+permalink: /categories12/cxl1/
 
 use_math: true
 toc: true
