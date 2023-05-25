@@ -101,7 +101,7 @@ DRAM cache는 hit latency를 최소화해야한다고 전에 말했습니다. �
 
 ### Performance
 
-<p align="center"><img src="../../assets/images/052503.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<p align="center"><img src="../../assets/images/052503.jpg" width="300px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
 <center><표 1, LH-Cache De-Optimizing></center>
 
 <표 1>는 speed up, hit-rate, 평균 hit latency를 LH-Cache 다양한 방법으로 실험한 결과입니다. LH-cache의 direct-mapped는 set-associative 보다 더 효과적인 반면에, Tag Serialization Latency와 [Predictor Serialization Latency (6)](#추가설명)에서 여전히 문제가 있습니다. 하지만 본 논문에서 제시하는 모델은 serialization latencies를 제거하고 IDEAL-LO에 비슷한 성능을 가집니다. 실험적 방법으로 저희 Solution을 말씀드리겠습니다.
@@ -112,7 +112,7 @@ DRAM cache는 hit latency를 최소화해야한다고 전에 말했습니다. �
 
 ### 환경 설정
 
-<p align="center"><img src="../../assets/images/052504.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<p align="center"><img src="../../assets/images/052504.jpg" width="300px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
 <center><표 2, 환경설정 Baseline></center>
 
 Pin-based x86 시뮬레이터를 사용하며, <표 2>로 Baseline 환경설정을 하였습니다. L3 cache와 DRAM paramter는 LH-Cache 논문과 같고, LH-Cache와 SRAM-Tag는 [LRU-based DIP replacement (7)](#추가설명)를 사용합니다. 
@@ -122,7 +122,7 @@ Pin-based x86 시뮬레이터를 사용하며, <표 2>로 Baseline 환경설정�
 
 ### workload
 
-<p align="center"><img src="../../assets/images/052505.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<p align="center"><img src="../../assets/images/052505.jpg" width="300px" height="300px" title="OP code 예시" alt="OP code" ><img></p>
 <center><표 3, Benchmark Characteristics></center>
 
 <표 3>을 보면 workload를 볼 수 있는데, MPKI는 Misses Per 1000 Instructions이고, foot-print는 linesize만큼 특정 line에 배로 곱한 개 수입니다. 
@@ -131,12 +131,57 @@ Pin-based x86 시뮬레이터를 사용하며, <표 2>로 Baseline 환경설정�
 
 ## <font color="red"> Latency-Optimized Cache Architecture</font>
 
-<p align="center"><img src="../../assets/images/052506.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<p align="center"><img src="../../assets/images/052506.jpg" width="700px" height="700px" title="OP code 예시" alt="OP code" ><img></p>
 <center><그림 4, 구조></center>
 
+이제 핵심부분입니다. 구조적으로 어떻게 구현했길래 IDEAL-LO에 가까운 성능을 내는지 확인해봅시다. 
+
+LH-Cache를 29-way에서 direct-mapped 구조로 설정함에 따라 성능이 8%에서 15%로 늘었지만 (<표 1> 참고), latency-optimized에는 아직 해결할 길이 많아 보입니다 (38%). tag lookup 의한 serialization latency로 차이가 발생하는 것이 주요 원인입니다. LH-cache가 이전 전통적인 cache처럼 tag-store와 data-store를 DRAM cache에서 분리한다고 생각합시다. 물리적으로나 분리된 구조이기 때문에 tag-store와 data-store는 이전 cache처럼 만드는 것이 말이 되어 보입니다. tag-store은 latency를 최적화하여 빠른 lookup이 되도록 만들어주고, data-store가 최적화되는 반면에도 여러 port를 가질 수 있습니다. 
+
+**우리는 인접한 tag-store를 분리하는 것이 tag와 data가 같은 DRAM array에 공존할 때에 불필요하다는 중요한 관점을 가져야 합니다.**
+
+---
+
+### Alloy Cache
+
+tag-store와 data-store의 분리를 정확히 하는 것이 TSL overhead를 피하도록 도와줍니다. 이것이 Alloy Cache라 부르는 우리의 주요 cache 구조의 key point입니다. Alloy cache는 tag와 data를 TAD (Tag and Data)라고 불리는 하나의 entity로 합칩니다. Alloy Cache에 access할 때, 하나의 TAD를 제공합니다. 만일 tag가 TAD으로 부터 받은 tag와 일치한다면 cache hit라 생각하고 TAD에 있는 data line을 제공합니다. 만일 tag가 없다면 cache miss라 생각합니다. 그러므로 tag-store과 data-store이라는 각각의 분리된 access를 가지는 것이 아닌, Alloy Cache는 두 access를 하나의 융합된 access로 통합합니다. <그림 4> 처럼요. Cache miss에서, 사용되지 않은 data line을 이동시킬 때 bandwidth가 소모되는 적은 cost가 발생합니다. 이 overhead는 LH-Cache보다 상당히 적은 overhead입니다. 
+
+각 TAD는 directed-mapped된 Alloy Cache의 한 set를 대표합니다. Alloy Cache가 두 개의 power가 없는 set를 가지고 있따면, set를 확인하기 위해 address bit를 단순히 사용할 수 없습니다. 
+
+<그림 4>처럼 구조가 설계되어 있으며, Alloy Cache의 data transfer 크기는 DRAM cache의 물리적 제약에 의해 영향을 많이 받습니다. 5개의 data transfer를 진행하면 80bytes인데 TAD는 72bytes입니다. 때문에 8 bytes는 버려야 하는데 만일 set가 홀수이면 앞의 8bytes를, 짝수면 뒤의 8bytes를 버립니다. 
+
+---
+
+### Impact on Effective Bandwidth
+
+<p align="center"><img src="../../assets/images/052507.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><표 4, Bandwidth 비교></center>
+
+<표 4>를 보면, Alloy Cache는 6.4x배의 bandwidth를 제공하지만 LH-Cache는 1.8x배로 Alloy Cache가 훨씬 더 Bandwidth 부분에서 효과가 좋다는 것을 볼 수 있습니다. 
+
+---
+
+### Latency and Performance Impact
+
+<p align="center"><img src="../../assets/images/052508.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 5, Alloy Cache speed up></center>
+
+<그림 5>를 보면 latency와 성능 부분에서도 긍정적인 영향을 미치는 것을 볼 수 있습니다. 이상적인 SRAM-Tag와 성능이 비슷하게 Alloy Cache는 21%의 성능 향상을 보여주는 것을 볼 수 있습니다. 특히 perfect predictor(100% accuracy, zero-cycle latency)이면 Alloy Cache의 성능은 37%까지 상승하는 것을 볼 수 있습니다. 
+
+---
+
+## Low-Latency Memory Access Prediction
+
+MissMap 방법은 DRAM cache의 정보를 완벽하게 가져오는 것에 집중합니다. 그러므로, line 마다 정보를 계속 tracking할 필요성이 있습니다. 이것이 line당 one-bit 의 storage를 발생시킨다 해도, line이 수백만 개나 된다면, MissMap의 크기는 megabyte단위로 빠르게 접근합니다. MissMap의 크기가 클 때, storage와 L3 cache처럼 [on-chip 구조 (8)](#추가설명)에 저장하는 것을 피하는 것이 좋습니다. 이에 따라 L3 cache access latency(24 cycles)이 발생하게 됩니다. 이에 무시할만한 storage와 delay를 유발하는 정확한 predictor를 개발해야 합니다.
 
 
+### Serial Access vs. Parallel Access
 
+<p align="center"><img src="../../assets/images/052508.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 6, Cache Access 하는 방법: 직렬과 병렬></center>
+
+
+---
 
 ## 추가설명
 
@@ -160,3 +205,6 @@ Pin-based x86 시뮬레이터를 사용하며, <표 2>로 Baseline 환경설정�
 
 **(7) LRU-based DIP replacement**
 - 메모리에서 데이터를 교체하는 정책 중 하나임. Least Recently Used 약자 LRU와 Data-in-Place의 약자 DIP로 가장 오래 사용되지 않은 데이터를 교체하면서 교체된 데이터를 다른 위치에 이동시키지 않고 그 자리에 새로운 데이터를 저장하는 방식을 말함. 
+
+**(8) On-Chip Architecture**
+- 반도체 칩 내부에서 구성되는 하드웨어 아키텍처를 의미. CPU, 캐시 등의 요소를 포함
