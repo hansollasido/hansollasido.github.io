@@ -174,12 +174,91 @@ tag-store와 data-store의 분리를 정확히 하는 것이 TSL overhead를 피
 
 MissMap 방법은 DRAM cache의 정보를 완벽하게 가져오는 것에 집중합니다. 그러므로, line 마다 정보를 계속 tracking할 필요성이 있습니다. 이것이 line당 one-bit 의 storage를 발생시킨다 해도, line이 수백만 개나 된다면, MissMap의 크기는 megabyte단위로 빠르게 접근합니다. MissMap의 크기가 클 때, storage와 L3 cache처럼 [on-chip 구조 (8)](#추가설명)에 저장하는 것을 피하는 것이 좋습니다. 이에 따라 L3 cache access latency(24 cycles)이 발생하게 됩니다. 이에 무시할만한 storage와 delay를 유발하는 정확한 predictor를 개발해야 합니다.
 
+---
 
 ### Serial Access vs. Parallel Access
 
-<p align="center"><img src="../../assets/images/052508.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<p align="center"><img src="../../assets/images/052601.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
 <center><그림 6, Cache Access 하는 방법: 직렬과 병렬></center>
 
+LH-Cache에서 만든 암묵적 가정은 메모리 접근하기 전에 DRAM cache miss가 있으면 시스템이 이를 보장해야 한다는 것입니다. 이 가정은 전통적인 cache가 어떻게 작동하는지와 유사합니다. 울리는 이를 *Serial Access Model (SAM)*이라 부르며, cache access와 memory access가 직렬적으로 처리됩니다. SAM 모델은 cache miss를 main memory로 보낼 때에 bandwidth가 효율적으로 동작합니다. 
+
+대안적으로, cache와 memory를 병렬적으로 관측하는 bandwidth가 덜 효율적인 모델을 사용할 수 있습니다. 우리는 이런 모델을 *Parallel Access Model (PAM)*이라 부릅니다. PAM은 memory access path에서 cache-miss detection latency를 제거한다는 장점이 있습니다. 
+
+PAM을 적절히 넣기 위해 memory content보다 cache content에 우선권을 줘야만 합니다. tag를 확인한 결과를 cache가 반환하기 전에 memory system이 data를 반환한다면, cache에서 dirty state로 line을 배정하여 data를 사용하기 전에 기다릴 수 있도록 만들어야 합니다. 
+
+DRAM cache miss인 경우 DRAM cache에 access하는 것이 낭비일지 모릅니다. 하지만 LH Cache와 Alloy Cache에서 tag는 DRAM에 위치하고 있습니다. 그렇기 때문에 DRAM cache miss가 나더라도 victim line을 선택하고 victim이 사용되었는지 확인하도록 tag를 읽어야만 합니다. 그래서 PAM은 perfect predictor에 비교했을 때, [cache utilization (9)](#추가설명)에 중대한 영향을 미치지는 않습니다. 
+
+---
+
+### To Wait or Not to Wait
+
+cache에 위치하는지 아닌지를 추정해서, SAM과 PAM을 동적으로 선택하는 것이 최우선 같아보입니다. 이 것을 *Dynamic Access Model (DAM)* 이라고 부릅니다. line이 cache에 있다고 판별되면, DAM은 SAM을 사용하여 memory bandwidth를 절약합니다. line이 cache에 없다면, DAM은 PAM을 사용하여 latency를 줄입니다. DAM은 SAM과 PAM 사이에 완벽한 정보를 요구하지는 않습니다만 좋은 추정치이어야만 합니다. 이 추정을 돕기 위해, 우리는 *Memory Access Predictor (MAP)* 기반의 하드웨어를 공개합니다. latency를 최소화 하기 위해 예측기를 간단한 것으로 고려해야 합니다. 
+
+---
+
+### Memory Access Predictor
+
+PAM의 latency 절감과 SAM의 bandwidth 절감은 cache hit rate에 따라 달라집니다. 이 cache miss와 hit는 이전 결과의 좋은 상관관계를 드러내며, 단순히 hit-rate를 사용하는 것 보다 더 효과적인 예측을 상관관계 결과를 추출함에 따라 가져올 수 있습니다. 이전에 hit이냐 miss냐에 의존해서 예측하는 예측기를 *History-Based Memory-Access Predictors*라 합니다. 
+
+---
+
+#### Global-History Based MAP (MAP-G)
+
+*MAP Global(MAP-G)*는 *Memory Access Counter (MAC)*이라 불리는 counter를 사용하여 memory access 또는 DRAM cache의 hit를 초래하는 최근의 L3 miss를 추적합니다. 만일 L3 miss가 memory access로 이어졌을 대, MAC는 증가하고 아니면 MAC는 감소합니다. 이러한 예측으로 MAP-G는 MAC의 MSB를 사용하여 L3 miss가 SAM (MSB=0) 또는 PAM (MSB=1)을 사용하는 지를 결정합니다. 
+
+---
+
+#### Instruction-Based MAP (MAP-I)
+
+cache access를 유발하는 instruction address로 hit/miss 정보를 잘 아는 observation을 추출하여 MAP-G의 효율성을 향상시킬 수 있습니다. 이 것을 *Instruction-Based MAP (MAP-I)*이라고 합니다. MAC을 사용하는 대신, MAC의 table을 사용하는데 이를 *Memory Access Counter Table (MACT)*라 합니다. 
+
+---
+
+## 성능 결과
+
+<p align="center"><img src="../../assets/images/052602.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 7, 성능 비교></center>
+
+MAP-I방법이 제일 좋고 그 다음 MAP-G 순으로 좋네요. 
+
+<p align="center"><img src="../../assets/images/052603.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><표 5, 정확도></center>
+
+정확도도 MAP-I이 높은 것을 볼 수 있습니다. 
+
+<p align="center"><img src="../../assets/images/052604.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 8></center>
+
+Cache size에 따른 speed up도 Alloy-Cache가 IDEAL-LO에 가까운 것을 볼 수 있네요.
+
+<p align="center"><img src="../../assets/images/052605.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 9></center>
+
+hit-latency도 Alloy-Cache에서 가장 낮은 것을 볼 수 있습니다. 
+
+<p align="center"><img src="../../assets/images/052606.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><표 6></center>
+
+<p align="center"><img src="../../assets/images/052607.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><그림 10></center>
+
+<p align="center"><img src="../../assets/images/052608.jpg" width="500px" height="500px" title="OP code 예시" alt="OP code" ><img></p>
+<center><표 7></center>
+
+Room 또한 향상된 것을 볼 수 있네요.
+
+## Conclusion
+
+DRAM cache의 구조에 대하여 trade-off를 분석해보았습니다. 최근에 발표된 설계 디자인 LH-cache와 latency 최적화된 이상적인 SRAM-based Tag-Store(SRAM-Tags)와 비교하여 성능을 보았으며 latency를 최적화하는 것은 단순히 hit-rate를 최적화하는 것보다 더 효과적인 DRAM cache를 제공한다는 것 또한 보았습니다. 
+
+정리해서 보면
+
+1. DRAM cache를 높은 associativity에서 direct mapped로 단순히 변경하여 그것 자체만으로도 좋은 성능 향상을 보여줬습니다. 예를 들어, LH-Cache를 29-way에서 1-way로 변경한 것은 8.7%에서 15%의 성능향상을 보여줬습니다. 이는 direct-mapped cache가 buffer hit를 이용하는 능력 뿐만 아니라 latency가 낮기 때문에 이뤄졌습니다. 
+
+2. direct-mapped로 단순히 구조를 바꾸는 것은 충분하지 않습니다. tag-store과 data-store로 나누는 것이 tag-serialization latency를 유발할 수 있기 때문에, Alloy Cache 구조를 제안합니다. data와 tag를 함께 storage entity로 합쳐줍니다. 이에 따라 tag와 data가 하나의 access로 가능해졌고 이는 21%나 되는 Alloy Cache의 성능향상을 볼 수 있었습니다. 
+
+3. Alloy Cache의 성능은 miss를 빠르게 처리를 하므로 향상될 수 있습니다. DRAM cache에 있는 tag를 확인해보기 전에 miss를 memory로 빠르게 보냄에 따라서죠. 그러나 MissMap으로 하는 것은 Megabytes나 되는 storage overhead와 latency가 발생하기 때문에, 성능이 낮아졌습니다. 대신 low-latency, low-storage overhead, 높은 정확도를 가진 hardware-based *Memory Access Predictor*를 사용하여 Alloy Cache를 35%나 성능 향상할 수 있었습니다. 
 
 ---
 
@@ -208,3 +287,9 @@ MissMap 방법은 DRAM cache의 정보를 완벽하게 가져오는 것에 집�
 
 **(8) On-Chip Architecture**
 - 반도체 칩 내부에서 구성되는 하드웨어 아키텍처를 의미. CPU, 캐시 등의 요소를 포함
+
+**(9) Cache utilization**
+- cache의 활용도나 이용률을 나타내는 개념. 
+
+**(10) MissMap**
+- cache 동작과 관련된 용어 중 하나. cache의 특정 위치(주소)에 대한 cache miss가 발생하였을 때, 해당 위치를 기록하는 map임. 
