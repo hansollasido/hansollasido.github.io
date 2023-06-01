@@ -44,7 +44,7 @@ categories:
       - title: "cache"
         url: /categories/cache/
 
-  - title: "대회, 프로젝트 및 수상"
+  - title: "대회, 프로젝트, 수상"
     children:
       - title: "파란학기제"
         url: /categories/파란학기제/
