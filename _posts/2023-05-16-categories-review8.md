@@ -1,5 +1,5 @@
 ---
-title: "yolo"
+title: "YOLO"
 excerpt: "You Only Look Once: Unified, Real-Time Object Detection 리뷰"
 
 categories:

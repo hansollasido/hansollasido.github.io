@@ -311,3 +311,54 @@ add x1, **x1**, x4
 - 병렬화를 사용하여 throughput을 향상시키는데 latency에서는 손해를 봄
 - Hazards: structural, data, control 
   - Hazard를 해결해야 pipeline을 효과적으로 만들 수 있음
+
+---
+
+### 퀴즈
+
+1) 다음 어셈블리 코드에 대해 hazard가 발생하는지 식별하고, 발생하는 경우 어떻게 해결할 수 있는지 pipeline diagram 및 datapath에 표현하시오.
+
+<p align="center"><img src="../../assets/images/060201.jpg" width="400px" height="400px" title="OP code 예시" alt="OP code" ><img></p>
+
+sub x3, x18, x5 \
+sub x6, x5, x18 
+
+
+add x7, x9, x12 \
+sub x7, x9, x12 
+
+
+sub x10, x13, x22 \
+add x13, x22, x9
+
+
+<font color="red">
+add x12, x14, x16 \
+add x12, x17, x12 \
+-> hazard 발생 
+</font>
+<br>
+<font color="blue">
+Forwarding으로 해결 \
+EX/MEM.RegisterRd -> ID/EX.RegisterRs2
+</font>
+
+2) Pipelined 프로세서에서 stall을 이용하면 모든 data hazard를 피할 수 있다. O
+
+3) Pipelined 프로세서에서 forwarding을 이용하면 stall 없이 모든 data hazard를 피할 수 있다. F
+
+4) 아래 왼쪽의 for loop가 오른쪽과 같은 RISC-V 어셈블리 코드로 컴파일 되었다고 할 때 다음 각 방법에서 stall penalty가 몇 cycle인지 구하시오 (Branch 여부는 Mem 단계에서 결정된다고 가정)
+  - No prediction (항상 not taken 이라고 가정) <font color="red">4x3=12</font>
+  - 1-bit prediction (초기 상태: not taken 이라고 가정) <font color="red">2x3=6</font>
+
+5) 5-stage pipelined RISC-V 프로세서에서 아래 코드를 실행하려고 할 때, 각 경우에 data hazard를 피하기 위해 stall 되어야 하는 총 cycle 수를 구하시오.
+  - (1) Forwarding (Bypassing)과 code scheduling을 모두 이용하지 않는 경우 <font color="red">4</font>
+  - (2) Forwarding (Bypassing)을 이용하고 code scheduling을 이용하지 않는 경우 <font color="red">1</font>
+  - (3) Forwarding (Bypassing)과 code scheduling을 모두 이용하는 경우 <font color="red">0</font>
+
+add x3, x1, x5 \
+sub x2, x3, x6 \
+sd x3, 24(x0) \
+ld x4, 16(x0) \
+add x1, x2 ,x4 
+
