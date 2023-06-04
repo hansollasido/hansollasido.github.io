@@ -1,5 +1,5 @@
 ---
-title: "[👊컴퓨터구조설계 및 응용 8]"
+title: "[👏퓨터구조설계 및 응용 8]"
 excerpt: "Large and Fast: Exploiting Memory Hierarchy"
 
 categories:
