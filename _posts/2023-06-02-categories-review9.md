@@ -17,7 +17,7 @@ date: 2023-06-13
 last_modified_at: 2023-06-13
 ---
 
-# 작성중 (6/2)
+# 작성중 (6/13)
 
 # 참고 사이트
 
@@ -52,6 +52,40 @@ Sota Object Detector가 점점 expensive해집니다. 파라미터의 개수도 
 정확도를 높이는 동시에 더 좋은 속도를 낼 수 있는 detection 구조에 대해 생각해볼 때입니다. 이를 위해서는 몇 가지 도전과제가 있죠.
 
 도전 1: 효율적인 [multi-scale feature fusion (2)](#추가설명)
+- 단순히 feature fusion으로 network 구조를 개발하는 것은 확실한 차이를 만들어 내지 못합니다. input feature가 다르기 때문에 다른 해상도를 만들어내는데, output feature가 동일하지 않게 fusion하는 것을 볼 수 있습니다. 이러한 문제를 해결하기 위하여 더 효율적인 bi-directional feature pyramid network(BiFPN)을 공개합니다. BiFPN은 다른 input feature의 중요성을 학습하여 학습할 수 있는 가중치를 도입한 network입니다.
+
+도전 2: model scaling
+- 이전 연구들은 좋은 정확도를 위하여 더 큰 backbone network나 더 큰 input image size에 주로 의존하였습니다. feature network 사이즈를 높이는 것과 box/class prediction network의 사이즈를 높이는 것은 정확도와 속도면 두 부분에서 중요하다는 것을 관찰하였습니다.
+
+이전 공통되게 사용된 backbone보다 더 좋은 속도를 얻기 위하여 EfficientNets를 최근 도입하였습니다. EfficientNet backbone과 BiFPN을 결합하여 새로운 object detection을 구현하였으니, 이름은 EfficientDet입니다. 
+
+이 EfficientDet은 파라미터 개수는 크게 줄였으며 정확도는 4 AP나 올랐습니다. 
+
+---
+
+### 관련 연구들
+
+**One-Stage Detectors**
+- 기존 object detector은 대부분 proposal을 내기 위한 two-stage이거나 one-stage입니다. two-stage는 더 flexible하고 accurate할 수 있지만 one-stage는 간단하고 사전에 정의된 anchor로 인해 더 효율적입니다. 최근, one-stage detector는 효율성, 간단성으로 인해 주목을 받고 있습니다. 본 논문은 one-stage detector 설계를 따라 속도와 더 좋은 정확성을 얻을 수 있도록 네트워크 구조를 최적화해보겠습니다.
+
+**Multi-Scale Feature**
+- object detection에서 가장 어려운 점 중 하나는 mult-scale feature를 효과적으로 표현하고 처리하는 것입니다. 본 논문에서는 multi-scale feature fusion을 직관적이고 합리적인 방법으로 최적화하는 것이 목표입니다.
+
+**Model Scaling**
+- 더 좋은 정확도를 얻기 위해, 더 큰 backbone 네트워크를 기용하여 baseline detector를 크게 만드는 것이 일반적이었습니다. 네트워크 너비, 깊이, 해상도의 크기를 늘려서 모델의 정확도를 올렸죠. 본 논문은 object detection을 위한 통합적인 scaling method를 **EfficientNet**에 영감을 받아 개발하였습니다.
+
+---
+
+### BiFPN
+
+multi-scale feature fusion 문제를 수식화하였습니다. 그 다음 본 논문의 주요 아이디어인 BiFPN(Efficient bidirectional cross-cale connections and weighted feature fusion)을 제안합니다. 
+
+#### Problem Formulation
+
+
+
+
+
 
 ---
 
