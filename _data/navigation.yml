@@ -37,12 +37,14 @@ categories:
     children:
       - title: "컴퓨터 비전"
         url: /categories/컴퓨터 비전/
-      # - title: "AI 가속기"
-      #   url: /categories/AI 가속기/
+      - title: "AI 가속기"
+        url: /categories/AI 가속기/
       # # - title: "SoC, NoC"
       # #   ulr: /categories/chip/
       - title: "cache"
         url: /categories/cache/
+      # - title: "accelerator"
+      #   url: /categories/accelerator/
 
   - title: "대회, 프로젝트, 수상"
     children:

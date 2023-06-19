@@ -17,8 +17,6 @@ date: 2023-06-13
 last_modified_at: 2023-06-13
 ---
 
-# 작성중 (6/13)
-
 # 참고 사이트
 
 [약초의 숲으로 놀러오세요 (herbwood)](https://herbwood.tistory.com/25)
