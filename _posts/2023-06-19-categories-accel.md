@@ -17,8 +17,6 @@ date: 2023-06-19
 last_modified_at: 2023-06-19
 ---
 
-# (작성중)
-
 # 논문
 
 [논문 링크](https://www.sciencedirect.com/science/article/pii/S2095809919306356)
@@ -83,8 +81,22 @@ ReRAM과 HMC는 PIM을 할 수 있게끔 memory 구조와 기술을 통합한 �
 
 ## Accelerators for emerging applications
 
-1. Low precision neural network
+Neural Network 구조를 달리 적용하여 DNN accelerators의 효율성을 증대할 수 있음. 
+
+1. Sparse neural network
+
+2. Low precision neural network
+
+3. Generative adversarial network
+
+4. Recurrent neural network
 
 ---
 
 ## The future of DNN accelerators
+
+1. DNN training and accelerator arrays
+
+2. ReRAM-based PIM accelerator for DNNs
+
+3. DNN accelerators on edge devices
