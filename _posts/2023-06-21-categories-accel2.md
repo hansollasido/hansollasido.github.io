@@ -61,6 +61,26 @@ FF subarray는 storage와 computation을 최소한의 area overhead로 지원하
 
 Figure 4(A)를 보면 밝은 파란색으로 마킹된 decoder와 driver를 볼 수 있습니다. 
 
+우선 multi-level voltage sources를 wordlines에 부착합니다. 이렇게 하면 정확한 input voltage를 공급할 수 있죠. NN computation은 모든 input data를 즉시 해당하는 wordline에 넣어야만 합니다. 그러므로 input voltage를 control하는 latch가 추가됩니다. control signal은 voltage source의 조합으로 결정되며, 요구되는 input voltage를 공급합니다.
+
+두 번째로는 아날로그 신호를 wordline으로 이송하기 위해 각 wordline에 분리된 amplifier를 부착하였습니다.
+
+세 번째로는 메모리 모드에서 사용되는 두 voltage level보다 NN computation은 $2^{P_{in}}$ level의 input voltage를 필요로 합니다. 
+
+마지막으로 두 개의 crossbar array를 사용하여 positive와 negative weights를 각각 저장하고, 같은 input port를 공유할 수 있게끔 만들어줍니다. 
+
+---
+
+#### Column Nultiplexer
+
+NN computation을 지원하기 위하여, figure 4 (B)에서 밝은 파랑색으로 마크된 구성원들을 추가함에 따라 ReRAM에 column multiplexer를 수정하였습니다. 수정된 multiplexer는 analog subtraction unit과 non-linear threshold (sigmoid) unit인 두 processing units을 결합하였습니다. 큰 NN이 여러 crossbar arrays에 매핑될 때 sigmoid unit은 우회합니다. 추가로, FF subarrary가 memory 모드와 computation 모드 사이에 bitline을 스위치 하기 위하여 multiplexer를 각 bitline에 달아 스위치를 control할 수 있게끔 만들어 줍니다. 
+
+---
+
+#### Sense Amplifier
+
+figure 4 (C)는 SA 설계를 보여줍니다. 
+
 ---
 
 
