@@ -108,8 +108,6 @@ encoder와 decoder에 있는 각 layer은 fully connected feed-forward network�
 
 다른 sequence transduction model과 유사하게, 본 논문은 학습된 embedding을 사용하여 input token과 output token을 dimension이 $d_{model}$인 벡터로 변환시킵니다. 
 
-<p align="center"><img src="../../assets/images/072704.png" width="700px" height="700px" title="Attention Is All You Need" alt="Attention Is All You Need" ><img></p>
-
 ---
 
 #### Positional Encoding
@@ -118,4 +116,34 @@ encoder와 decoder에 있는 각 layer은 fully connected feed-forward network�
 
 <p align="center"><img src="../../assets/images/072705.png" width="300px" height="300px" title="Attention Is All You Need" alt="Attention Is All You Need" ><img></p>
 
-$pos$는 position을 의미하며, i는 dimension을 의미합니다. 위와 같이 식을 둔 이유는, 고정된 k값이라도 $\mbox{PE}_{pos+k}$가 $\mbox{PE}_{pos+k}$의 선형 함수로 대표할 수 있어 상대적 위치를 분석해 쉽게 학습할 수 있게 가설화하였기 때문입니다. 
+$pos$는 position을 의미하며, $i$는 dimension을 의미합니다. 위와 같이 식을 둔 이유는, 고정된 k값이라도 $\mbox{PE}_{pos+k}$ 선형 함수로 표현할 수 있어서 상대적 위치를 분석해 쉽게 학습할 수 있게 가설화하였기 때문입니다. 
+
+### Self-Attention
+
+self-attention과 recurrent and convolutional layer를 비교해보겠습니다. 
+
+self-attention은 말 그대로 attention을 자기 자신한테 취한다는 것입니다. 
+
+<p align="center"><img src="../../assets/images/072801.png" width="200px" height="200px" title="Attention Is All You Need" alt="Attention Is All You Need" ><img></p>
+
+"The animal didn't cross the street because it was too tired."라는 문장이 있다면, 사람은 문맥상 it이 animal을 가리킨다는 것을 알 수 있습니다. 하지만 컴퓨터는 이해하는 과정이 매우 어렵죠. 이를 위해서 self-attention이 나오게 되었습니다.
+
+<p align="center"><img src="../../assets/images/072802.png" width="500px" height="500px" title="Attention Is All You Need" alt="Attention Is All You Need" ><img></p> 
+
+"I am a student"와 같은 문장이 있을 때, self-attention을 진행하게 되면 attention score은 아래와 같습니다. 
+
+<p align="center"><img src="../../assets/images/072803.png" width="500px" height="500px" title="Attention Is All You Need" alt="Attention Is All You Need" ><img></p>
+
+I와 student의 score가 상당히 높은 것을 볼 수 있습니다. 이 처럼 단어간의 상관관계를 recurrent나 convolution 처럼 도출할 수 있습니다. 이러한 self-attention을 적용하기 위해서는 (1) 각 층의 전체적인 계산 복잡도, (2) 병렬화할 수 있는 계산량, (3) 네트워크에 있는 long-range dependencies 사이의 path 길이를 알아야 합니다. long-range dependencies를 학습하는 것은 sequence transduction task에 주요 challenge 입니다. 
+
+long-range dependency는 long-term dependency라고도 불리는데, 과거 뉴런층의 정보가 멀리 있는 뉴런층까지 도달하기가 어렵다는 문제입니다. 이런 dependency 문제는 path 길이에 주로 영향을 받는데, 짧으면 짧을수록 long-range dependency 학습이 쉬워집니다. 이 때문에, 본 논문은 다른 층 종류로 구성된 네트워크 상에서, 두 input과 output 위치 사이의 최대 path length를 비교해보겠습니다. 
+
+<p align="center"><img src="../../assets/images/072704.png" width="700px" height="700px" title="Attention Is All You Need" alt="Attention Is All You Need" ><img></p>
+
+Table 1에서 보면, self-attention layer는 모든 위치를 연결하는데 일정하게 sequential operation을 수행하지만 recurrent layer은 O(n)의 sequential operation을 수행합니다. 계산 복잡도 측면에서, self-attention layer은 representation dimensionality $d$보다 더 작은 $n$을 사용하면 recurrent layer보다 빠를 수 있습니다. self-attention이 계산 복잡도나, sequential operation이나 maximum path length나 recurrent, convolution 보다 더 좋은 성능을 가지고 있네요. 
+
+### 실험
+
+<p align="center"><img src="../../assets/images/072804.png" width="700px" height="700px" title="Attention Is All You Need" alt="Attention Is All You Need" ><img></p>
+
+실험 결과는 위와 같습니다. BLEU 점수가 다른 Recurrent, Convolution 에 비해 높은 것을 볼 수 있으며 Training Cost, 즉 훈련 속도도 훨씬 빠른 것을 볼 수 있습니다. convolution이 아닌 self-attention base인 encode, decode로 성능을 끌어올릴 수 있네요.
