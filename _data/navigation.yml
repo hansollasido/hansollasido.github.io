@@ -18,44 +18,48 @@ main:
 # sidebar navigation (categories)
 # 2022.09.24 sidebar ver2.0 : main-sub version
 categories:
-  - title: "공부"
+  - title: "일기"
     children:
-      - title: "컴퓨터 구조"
-        url: /categories/컴퓨터 구조/
-      - title: "핸즈온"
-        url: /categories/핸즈온/
-      - title: "디지털 시스템 설계"
-        url: /categories/디지털 시스템 설계/
-      - title: "융합캡스톤디자인2"
-        url: /categories/융합캡스톤디자인2/
-      - title: "컴구설"
-        url: /categories/컴구설/
-      - title: "CXL"
-        url: /categories/cxl/
+      - title: "연구 일지"
+        url: /categories/연구 일지/
+  # - title: "공부"
+  #   children:
+      # - title: "컴퓨터 구조"
+      #   url: /categories/컴퓨터 구조/
+      # - title: "핸즈온"
+      #   url: /categories/핸즈온/
+      # - title: "디지털 시스템 설계"
+      #   url: /categories/디지털 시스템 설계/
+      # - title: "융합캡스톤디자인2"
+      #   url: /categories/융합캡스톤디자인2/
+      # - title: "컴구설"
+      #   url: /categories/컴구설/
+      # - title: "CXL"
+      #   url: /categories/cxl/
 
-  - title: "논문"
+  - title: "논문 리뷰"
     children:
       - title: "컴퓨터 비전"
         url: /categories/컴퓨터 비전/
-      - title: "AI 가속기"
-        url: /categories/AI 가속기/
+      # - title: "AI 가속기"
+      #   url: /categories/AI 가속기/
       # # - title: "SoC, NoC"
       # #   ulr: /categories/chip/
-      - title: "cache"
-        url: /categories/cache/
+      # - title: "cache"
+      #   url: /categories/cache/
       # - title: "accelerator"
       #   url: /categories/accelerator/
 
-  - title: "대회, 프로젝트, 수상"
-    children:
-      - title: "파란학기제"
-        url: /categories/파란학기제/
-      - title: "자율주행"
-        url: /categories/자율주행/
-      - title: "산학박람회"
-        url: /categories/산학박람회/
-      - title: "학습공동체"
-        url: /categories/학습공동체/
+  # - title: "대회, 프로젝트, 수상"
+  #   children:
+  #     - title: "파란학기제"
+  #       url: /categories/파란학기제/
+  #     - title: "자율주행"
+  #       url: /categories/자율주행/
+  #     - title: "산학박람회"
+  #       url: /categories/산학박람회/
+  #     - title: "학습공동체"
+  #       url: /categories/학습공동체/
 
   - title: "독서"
     children:
