@@ -63,4 +63,29 @@ NLP의 BERT의 class token과 비슷하게, 본 논문은 embedded patch 집합�
 결론적으로는 위의 식 (4)와 같이 y라는 클래스가 나오게 되는 것이죠. 
 
 **Inductive bias**
-- Vision Transformer는 CNN보다 더 적은 이미지 특정 귀납적 편향을 가지고 있습니다. CNN에서는 지역성과 
+- Vision Transformer는 CNN보다 더 적은 이미지 특정 귀납적 편향을 가지고 있습니다. CNN에서는 지역성과 translation equivariance가 전체 모델, 각각 층에 반영되어 있습니다. ViT에서는 오직 MLP 층에서만 지역성을 갖췄으며, translation equivariance합니다. 하지만 self-attention 층은 global하죠. 2D 이웃한 구조는 아주 조금 사용됩니다. 모델 시작할 때 image를 patch로 cutting하는 부분과 다른 크기의 이미지를 position embedding할 때 조정하기 위한 fine-tuning 시간 때에만 사용되죠. 그것 외에는 patch의 2D position에 관련한 어떠한 정보도 position embedding이 가지지 않습니다. 
+
+**Hybrid Architecture**
+- Raw image patch의 대안으로, input sequence는 CNN의 특징 맵으로부터 만들 수 있습니다. 이러한 hybrid model에서, patch embedding porjection E는 CNN 특징 맵으로 부터 추출된 patch에 적용됩니다. 
+
+#### Fine-tuning and higher resolution
+
+전형적으로, ViT를 큰 dataset에 대하여 전이학습을 하고, downstream task에 fine-tune을 진행합니다. 사전 학습된 모델의 prediction head부분을 제거하고 zero-initialized된 $D \times K$ feedforward 층을 추가합니다. 여기서 $K$는 downstream class의 개수를 의미합니다. pre-training하는 것보다 더 큰 이미지 크기에서 fine-tune하는 것이 종종 유익합니다. 더 큰 이미지 크기의 image가 주어졌을 때, 같은 사이즈의 patch를 유지합니다. 이를 통해 효과적으로 큰 sequence 길이를 만들 수 있죠. 
+
+하지만, Vision Transformer는 보조 sequence 길이를 조정할 수 있어서 전이학습된 position embedding을 더이상 유의미하지 않게 만듭니다. 본 논문은 전이학습된 position embedding의 2D interpolation을 진행하여 수행하였습니다. 
+
+### 실험
+
+ResNet과 Vision Transformer(ViT), hybrid를 실험하고 평가하였습니다. 각 모델의 data 요구사항을 이해하기 위하여, 본 논문은 다양한 크기의 dataset에 사전학습을 시행하였고 수많은 benchmark를 통해 실험을 진행하였습니다. 
+
+<p align="center"><img src="../../assets/images/080101.png" width="600px" height="600px" title="ViT" alt="ViT" ><img></p>
+
+ViT가 다른 CNN보다도 정확도가 높은 것을 볼 수 있습니다. 
+
+<p align="center"><img src="../../assets/images/080102.png" width="600px" height="600px" title="ViT" alt="ViT" ><img></p>
+
+# 결론
+
+본 논문은 NLP에서 쓰였던 Transformer를 image classification에 적용한 방법에 대해 서술하고 있습니다. 이전 연구들은 computer vision에서 self-attention을 사용했던 것과는 달리, 본 논문은 image 특징적인 귀납적 편향을 첫 번째 patch 추출 단계를 제외하고는 모델 구조에 적용하지 않았습니다. 대신에 NLP에서 사용되었던 표준 Transformer encoder로 patch를 만들었으며, 이 patch 집합으로 이미지를 분할하였습니다. 이 간단한 전략은 큰 dataset에 사전학습되었을 때 놀라운 결과를 보여줍니다. Vision Transformer은 image classification dataset의 sota와 같거나 능가하는 결과를 보여주고 있습니다. 
+
+아직 많은 challenge가 남아 있습니다. 그 중 하나는, ViT를 다른 computer vision task에 적용하는 일입니다. object detection이나 segmentation과 같은 작업 말이죠. 또 다른 challenge로는 self-supervised pre-training 방법을 계속 이어나가야 한다는 점입니다. 본 논문의 첫번째 실험은 self-supervised pre-training으로 부터 좋은 결과를 보여줬지만, 아직 self-supervised와 large-scale supervised pre-training과의 큰 격차가 있습니다. 
