@@ -46,3 +46,4 @@ test에 대한 encoder 값을 만들고, 여러 label에 대한 text embedding�
 <p align="center"><img src="../../assets/images/080106.png" width="400px" height="400px" title="CLIP" alt="CLIP" ><img></p>
 
 결과는 매우 낙관적입니다. zero-shot CLIP이 다른 CNN이나 BiT-M에 비해 정확도와 속도가 빠르네요. 
+

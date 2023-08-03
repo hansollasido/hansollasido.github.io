@@ -17,13 +17,15 @@ date: 2023-07-31
 last_modified_at: 2023-07-31
 ---
 
-# 배경
+# Abstract
 
 Transformer 구조는 NLP에서 많이 사용되어 왔습니다. 하지만 Transformer를 Computer vision에 사용하기란 제한이 있었죠. Vision에서는 attention이 CNN과 결합되어 적용되었거나, 전체적인 구조를 유지한체 CNN을 대체하는 데에 사용되어 왔습니다. 
 
 본 논문은 CNN의 불필요성에 대해 얘기하고, image patch의 연속된 집합에 직접적으로 적용된 transformer가 image classification에 얼마나 잘 작동하는 지를 보여줍니다. 본 논문의 **Vision Transformer (ViT)**는CNN의 state of the art에 비교하여 성능이 뛰어나고, 학습하는 데에 computational resource가 덜 요구된다는 장점이 있습니다.
 
 오늘은 ViT에 대해 알아보겠습니다.
+
+---
 
 ### Introduction
 
@@ -45,12 +47,15 @@ data가 퍼진 정도를 분산이라 하며, data가 target에 부터 얼마나
 
 하지만, 14M-300M image 처럼 큰 dataset이라면 얘기가 달라집니다. 큰 dataset에 경우, Transformer가 귀납적 편향을 충분히 갖추게 됩니다. 본 논문의 **Vision Transformer (ViT)**는 적절한 규모에 전이학습되면 훌륭한 결과를 보여줍니다. 
 
+---
 
 ### 방법
 
 <p align="center"><img src="../../assets/images/073102.png" width="600px" height="600px" title="ViT" alt="ViT" ><img></p>
 
 최대한 original Transformer(Vaswani et al., 2017)과 비슷하게 모델을 설계하였습니다.
+
+---
 
 #### VISION TRANSFORMER (ViT)
 
@@ -68,11 +73,15 @@ NLP의 BERT의 class token과 비슷하게, 본 논문은 embedded patch 집합�
 **Hybrid Architecture**
 - Raw image patch의 대안으로, input sequence는 CNN의 특징 맵으로부터 만들 수 있습니다. 이러한 hybrid model에서, patch embedding porjection E는 CNN 특징 맵으로 부터 추출된 patch에 적용됩니다. 
 
+---
+
 #### Fine-tuning and higher resolution
 
 전형적으로, ViT를 큰 dataset에 대하여 전이학습을 하고, downstream task에 fine-tune을 진행합니다. 사전 학습된 모델의 prediction head부분을 제거하고 zero-initialized된 $D \times K$ feedforward 층을 추가합니다. 여기서 $K$는 downstream class의 개수를 의미합니다. pre-training하는 것보다 더 큰 이미지 크기에서 fine-tune하는 것이 종종 유익합니다. 더 큰 이미지 크기의 image가 주어졌을 때, 같은 사이즈의 patch를 유지합니다. 이를 통해 효과적으로 큰 sequence 길이를 만들 수 있죠. 
 
 하지만, Vision Transformer는 보조 sequence 길이를 조정할 수 있어서 전이학습된 position embedding을 더이상 유의미하지 않게 만듭니다. 본 논문은 전이학습된 position embedding의 2D interpolation을 진행하여 수행하였습니다. 
+
+---
 
 ### 실험
 
@@ -83,6 +92,8 @@ ResNet과 Vision Transformer(ViT), hybrid를 실험하고 평가하였습니다.
 ViT가 다른 CNN보다도 정확도가 높은 것을 볼 수 있습니다. 
 
 <p align="center"><img src="../../assets/images/080102.png" width="600px" height="600px" title="ViT" alt="ViT" ><img></p>
+
+---
 
 # 결론
 
