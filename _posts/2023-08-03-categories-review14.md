@@ -42,3 +42,15 @@ Swin Transformer의 주요 설계 요소는 Figure (2) 처럼 연속적인 self-
 이전 layer에서 shift된 window는 modeling power를 높입니다. 이러한 전략은 한 window 내에 있는 모든 query patch가 같은 key set을 공유하기 때문에 실제 latency에서도 효과적입니다. 대조적으로 이전의 sliding window로의 self-attention 방법은 다른 query pixel에 대한 다른 key set으로 인해 genearl hardware에서의 low latency가 문제였습니다. 본 논문은 slinding window 방법보다 shifted window가 lower latency인 것을 증명하였습니다. 심지어 모든 multi-layer 구조에서도 효과적인 것을 볼 수 있었습니다.
 
 Swin Transformer은 ViT/DeiT, ResNe(X)t와 같은 모델보다도 성능이 뛰어난 것을 볼 수 있었으며, image classification, object detection, semantic segmentation과 같은 여러 분야에서도 높은 성능을 볼 수 있었습니다. 
+
+---
+
+### Method
+
+#### Overall Architecture
+
+<p align="center"><img src="../../assets/images/080303.jpg" width="800px" height="800px" title="Swin Transformer" alt="Swin Transformer" ><img></p>
+
+전체적인 구조는 figure 3과 같습니다. tiny version인 Swin-T라는 것만 참고해주세요. 먼저 RGB image를 non-overlapping patch로 분할합니다. ViT처럼요. 각 patch는 token으로 정의되며 pixel RGB 값의 연속된 집합이라는 특징을 가지고 있습니다. 
+
+Self-attention computation으로 수정된 여러 Transformer block들은 이 patch token에 적용됩니다. $\frac{H}{4} \times \frac{W}{4}$를 유지하며 linear embedding을 거칩니다.
