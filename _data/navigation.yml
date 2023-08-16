@@ -36,6 +36,14 @@ categories:
       #   url: /categories/컴구설/
       # - title: "CXL"
       #   url: /categories/cxl/
+  - title: "공부"
+    children:
+      - title: "반도체"
+        url: /categories/반도체/
+      - title: "Linux"
+        url: /categories/Linux/
+      - title: "Docker"
+        url: /categories/Docker/
 
   - title: "논문 리뷰"
     children:

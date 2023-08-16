@@ -110,7 +110,7 @@ cache에 대한 정보를 분석해본 결과
 
 대충 옛 기억을 통해 현재 서버 컴퓨터의 cache 구조를 보면
 
-<p align="center"><img src="../../assets/images/080411.png" width="400px" height="400px" title="GEMM" alt="GEMM" ><img></p>
+<p align="center"><img src="../../assets/images/080411.jpg" width="400px" height="400px" title="GEMM" alt="GEMM" ><img></p>
 
 위와 같다. Tag는 훨씬 길겠지만 짧게 표현하였다. 이제 이것을 GEM5에 구현하려고 한다. 먼저 CPU 여러 개를 달고 L1, L2, L3를 구현하자. 
 
