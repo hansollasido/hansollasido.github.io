@@ -3,9 +3,9 @@ title: "Attention Is All You Need"
 excerpt: "Attention Is All You Need 리뷰"
 
 categories:
-  - 컴퓨터 비전
+  - NLP
 tags:
-  - [딥러닝, 논문 리뷰, Object Detection]
+  - [딥러닝, 논문 리뷰, NLP]
 
 permalink: /categories9/review11/
 

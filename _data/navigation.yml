@@ -49,6 +49,12 @@ categories:
     children:
       - title: "컴퓨터 비전"
         url: /categories/컴퓨터 비전/
+      - title: "NLP"
+        url: /categories/NLP/
+      - title: "PIM"
+        url: /categories/PIM/
+      
+        
       # - title: "AI 가속기"
       #   url: /categories/AI 가속기/
       # # - title: "SoC, NoC"
