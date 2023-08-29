@@ -111,7 +111,61 @@ Passive capacitor은 analog 계산에 의해 비선형성과 변동 문제를 �
 
 #### Digital SRAM-Based PIM
 
-Digital PIM 구조는 analog PIM에서의 문제, analog-to-digital/digital-to-analog converter (ADC/DAC) overhead와 비선형성 계산으로 인한 PVT 변동 문제를 해결하기 위하여 개발되었습니다. digital PIM 구조에서 계산은 전체적으로 digital이라 물리적 변동의 영향을 제거하고 data 전환이 더이상 필요하지 않게 만듭니다. 
+Digital PIM 구조는 analog PIM에 있는 문제점들(ADC/DAC 문제, PVT 변동 문제)을 해결하여 개발된 모델입니다. digital PIM 구조 계산은 전체적으로 digital 이기 때문에, 물리적 변동의 영향을 제거하고, data 변환도 더 이상 필요하지 않게 됩니다. 
+
+<p align="center"><img src="../../assets/images/082901.png" width="500px" height="500px" title="PIM Overview" alt="PIM Overview" ><img></p>
+
+**<Fig 4>**를 보면 digital PIM을 input, weights, output을 support하는 것을 볼 수 있습니다. PIM cell은 함께 쌓여서 요구된 계산 precision에 기반하여 1-16bit unit column MAC을 구성합니다. 다른 기능들은 unit column 안에 PIM cell의 위치에 의거하여 할당됩니다. 그러나, digital PIM은 메모리나 계산 block으로 유발된 hardware redundancy로 부터 문제가 생기게 되는데, 이는 PIM cell이 커지고 메모리 밀도가 낮아지는 결과를 초래합니다. 
+
+가장 최근의 digital PIM은 각 column에 있는 256x 4bit weights를 실행하고 64x 12bit MAC output을 생성합니다. 각 PIM cell은 2-bit NOR gate와 6T SRAM을 융합하여 구성되고, binary muliplication 결과를 생산합니다. 그리고 나서, accumulation 동작을 adder tree에서 진행합니다. weight precision은 8-16bit로 연장될 수 있는데, 이 경우 더 많은 area를 소모하는 동안 다수의 PIM macro를 사용합니다. 
+
+---
+
+### DRAM PIM
+
+DRAM PIM은 DRAM 동작과 구조에서 부터 착안된 PIM입니다. DRAM 구조는 cell 밀도에 집중하여 개발되어 왔는데, 각 cell은 한개의 transistor와 한 개의 capacitor로 이뤄져 있습니다. 비록 구조적으로 간단하여 DRAM-based PIM은 흥미로운 PIM이지만, 물리적 제한이 너무 tight하다는 물리적 제한이 있습니다.많은 이전의 연구들은 이러한 문제들을 해결해왔습니다. 최근 DRAM-based PIM 구조는 아래 Table-II에 정리되어 있습니다.
+
+<p align="center"><img src="../../assets/images/082902.png" width="500px" height="500px" title="PIM Overview" alt="PIM Overview" ><img></p>
+
+<p align="center"><img src="../../assets/images/082903.png" width="500px" height="500px" title="PIM Overview" alt="PIM Overview" ><img></p>
+
+**<Fig 5>**를 보면, DRAM-based PIM을 세 개의 카테고리로 나눕니다: cell-level, bank-level, 3-d level. 먼저 DRAM cell-level PIM은 low level transistor logic을 bitline sense amplifier와 통합하여 bulk bitwise operation을 구성합니다. 두 번째로, bank-level PIM은 각 bank에서 column decoder 이후에, high level processing logic을 통합합니다. 이 기술은 cell-level PIM과 비교하여 최대 internal bandwidth를 사용할 수 없습니다. 하지만 더 넓은 logic area를 활용함에 따라, DRAM-based PIM의 가능성을 열어주었죠. 세 번째는 3-d level PIM은 Hybrid memory cube (HMC)처럼 base logic die와 함께 3-d stacked memory로 구성됩니다. logic die를 통합하여 두 개의 entity가 TSV를 통해 interconnected된 stacked memory dies로 logic die를 통합시킵니다. 그러나, 물리적 한계와 3-d stacked die의 타이밍 제약으로 인하여 3-d level PIM은 challenge로 남아있습니다. 
+
+---
+
+#### DRAM 동작과 구조 Background
+
+DRAM chip은 전하를 저장하면서, 동작을 지원하는 control logic과 data I/O circuitry를 할 수 있는 memory cell로 구성됩니다. 여러 DARM bank로 구성되어 있으며, 각 bank는 DRAM mat의 stack으로 구성되어 있습니다. DRAM cell의 array 구조는 기본적으로 2-d이며 각 cell은 하나의 transistor와 capacitor로 구성되어 있고 bit 값을 저장하고 있습니다. mat에 있는 값을 read/write 하기 위해, row decoder은 row address를 받고, single wordline을 선택합니다. 그리고 나서 해당 wordline에 연결되어 있는 모든 DRAM cell에 있는 transistor들은 활성화되고, capacitor로 값을 읽거나 씁니다. 더 정교하게 하면, 각 DRAM cell에 있는 capacitor은 transistor가 활성화될 때, VDD의 반까지 pre-charge된 bitline과 charge를 공유하기 시작합니다. Charge 공유는 bitline에 있는 전압 변동을 조금 유발하고 bitline sense amplifier는 인식할만한 logic level의 변동을 증폭합니다. 전체 row가 증폭되면서, column decoder은 하나 또는 그 이상의 bitline을 활성화시켜 해당하는 data를 IO pad로 이동시킵니다. 
+
+---
+
+#### Cell-Level PIM
+
+Cell-Level PIM은 bit-line sense amplifier에서 logic을 통합시켜 다수 row에 대량의 bitwise operation을 실행합니다. 이 때, 내부 memory bandwidth는 최대로 되죠. 그러나 극도로 좁은 pitch로 된 DRAM에 있는 logic integration은 현실적이지 않습니다. single cell의 pitch는 오직 하나의 transistor와 capacitor에 거의 최적화되어 있어서 더 많은 transistor를 추가하기는 challenge가 남게 됩니다. 이러한 어려움을 해결하기 위하여, 이전 연구들은 간단한 gate-level 동작을 logic gate을 넣지 않고 실행해보는 것에 집중했습니다.
+
+<p align="center"><img src="../../assets/images/082904.png" width="500px" height="500px" title="PIM Overview" alt="PIM Overview" ><img></p>
+
+AMBIT는 triple row access (TRA)로 transistor 추가하는 것 없이 AND와 OR 동작을 수행하였습니다. **<Fig 6(a)>**처럼요. TRA는 세 wordline을 동시에 활성화 하기 위해서 오직 DRAM의 control logic을 수정만 하면 됩니다. 만일 세 wordline이 활성화 되면, 같은 bitline을 공유하는 세 개의 cell이 그 전하를 공유합니다. TRA의 결과로 세 개의 cell 중 두 개 이상의 cell이 1이면 1로 결과를 도출합니다. 
+
+<center>$R=AB+BC+CA=C(A+B)+\bar{C}(AB)$</center>
+
+위 식이 AMBIT의 논리식인데, C를 0또는 1로 활성화하게 되면, A와 B를 AND 또는 OR로 사용할 수 있게 됩니다. 추가로 AMBIT는 dual-contact cell(DCC)를 제안하여 NOT 동작을 실행합니다. 각 DCC는 추가적으로 wordline과 transistor의 pair을 포함하여 sense amplifier의 inverted value를 cell로 이동시킵니다. **<Fig 6(b)>**를 보시면 됩니다. 하지만 실제로 DCC를 넣는 다는 것은 더 많은 wordline과 transistor를 DRAM cell의 pitch에 딱 맞게 구성해야 하기 때문에 실현 불가능합니다. 
+
+DRISA는 반면에, 세가지 수정된 DRAM cell 구조를 제안합니다: 3T1C-NOR, 1T1C-NOR/MIX, 1T1C-ADDER. **<Fig 6(c), (d), (e)>**에 나와있습니다. NOR나 다른 logic gate같은 간단한 logic과 parallel adder와 latch을 각각 sense amplifier 밑에 통합하여 1T1C-NOR/MIX와 1T1C-ADDER를 만들었습니다. 간단한 logic gate지만, DRAM cell pitch 내에서 통합시키는 것에는 어려움이 있습니다. 그러나 3T1C-NOR은 이러한 어려움을 3T1C cell의 설계로 해결하였습니다. 이 디자인은 read와 write 동작을 동시에 하는 분리된 두 개의 wordline으로 구성되어 있습니다. cell design에 어떠한 수정없이 NOR 동작을 자연스레 수행할 수 있습니다. 만일 두 M3 transistor가 해당하는 wordline이 활성화되면서 enabled되면, 같은 bitline을 공유하고 있는 두 M2 transistor가 NOR gate로 바뀝니다. DRISA는 transistor-level shifter circuit을 bitline sense amplifier 아래에 두어, data 이동이 인접한 bitline에 할 수 있으면서 선택, 곱셈, 덧셈과 같은 더 정교한 계산을 수행할 수 있게 합니다. cell-level PIM이 전체 row의 더 큰 input operand size로 최적화 할 수 있어서, AMBTI와 DRISA는 RowClone-FPM (Fast Parallel Mode)의 방법으로 사용됩니다. 
+
+추가적으로 row decoder와 driver를 수정하여 multi-row 활성화시키는데, 이는 실행속도를 높입니다. AMBIT는 또한 activate-activate-precharge (AAP)의 복잡한 command를 융합하여 command의 수를 줄여 전체적인 latency를 줄입니다. 
+
+---
+
+#### Bank-Level PIM
+
+이전에 언급했듯이, cell-level PIM은 memory bank의 전체 내부 bandwidth를 활성화 하는 것에 최고로 적합한 PIM입니다. 하지만 심각한 area 제약으로 인하 challenge가 있습니다. 두 실현 가능한 bank-level PIM이 있는데 Newton과 HBM-PIM입니다. 이 PIM은 column decoder와 selector 이후에 processing logic을 통합하여, cell array의 전체 너비에 장점을 주도록해서 이러한 어려움을 해결하였습니다 **<Fig 7(a)>**. 여러 bank들을 활성화하여 bank parallelism을 구성하였고 동시에 전체 row를 활성화지 않음에 따라 내부 bandwidth loss를 보상할 수 있게 만듭니다. 
+
+<p align="center"><img src="../../assets/images/082905.png" width="500px" height="500px" title="PIM Overview" alt="PIM Overview" ><img></p>
+
+특히 HBM-PIM은 20nm DRAM을 사용하여 HBM에 PIM chip을 처음으로 제작한 PIM입니다. 
+
+PIM의 장점을 최대화하기 위하여, Newton은 추천시스템(Facebook's DLRM)과 language model(Google's BERT, OpenAI's GPT)과 같은 deep learning model의 memory-bound에 집중하였습니다. 그러므로 matrix-vector 곱셈을 효율적으로 계산하는 고정된 data flow 가속기를 제안합니다. **<Fig 7(b)>**는 한 DRAM die에 전체적인 Newton 구조를 설명하고 있습니다. 각 bank는 16 multiplier, reduction tree에 있는 16 adders, 16-bit accumulator registor를 포함합니다. 
 
 ---
 
