@@ -80,3 +80,16 @@ HBM2 DRAM die는 4개의 pseudo channel (pCHs)를 구성하고 각각 4개의 ba
 심지어 HBM으로도 현대 DNN에서 제한된 memory bandwidth로도 고생을 받고 있습니다. 한 가지 해결방법으로는 HBM device를 processor와 통합시키는 방법인데, 이는 power, 열, 뿐만아니라 I/O connection에 의해 현실적으로 만들기에 어려움이 따릅니다. 
 
 <p align="center"><img src="../../assets/images/090502.png" width="700px" height="700px" title="HBM-PIM" alt="HBM-PIM" ><img></p>
+
+---
+
+### PIM-DRAM Architecture
+
+bank-level 병렬성을 적용하여 고대역폭 on-chip을 실용적으로 사용하기 위하여 PIM 구조를 제안합니다. 비록 HBM2를 기반으로 설명되었지만, 기존 standard DRAM (DDR, LPDDR, GDDR)에서도 적용가능합니다.
+
+---
+
+#### Overview
+
+<!-- 그림 1이 본 논문의 PIM 구조입니다. (a)에서 PIM-DRAM die, PIM-HBM DRAM die, (b)에서 PIM execution과 -->
+
