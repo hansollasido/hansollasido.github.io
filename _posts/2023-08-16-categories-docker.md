@@ -22,6 +22,8 @@ last_modified_at: 2023-08-16
 맨 처음에, 다음과 같이 생성할 수 있음. 
 
 ```
+docker ps
+
 docker image ls
 
 docker run -it --privileged --name hansol_gem5 gem5:fs_230706 /bin/bash
