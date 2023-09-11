@@ -50,3 +50,11 @@ labeled된 학습 data의 부족으로, depth-modality를 위한 사전 학습 p
 ### Multimodal Architecture for RGB-D Object Recognition
 
 <p align="center"><img src="../../assets/images/091102.png" width="700px" height="700px" title="Multimodal" alt="Multimodal" ><img></p>
+
+RGB stream과 depth stream은 깊은 CNN으로 구성되며, 이 CNN은 ImageNet database의 object classification을 사전학습한 네트워크입니다. 사전 학습된 네트워크로 시작하는 주된 이유는 제한된 RGB-D 학습 데이터를 사용하여 백만개의 파라미터가 있는 큰 CNN을 학습시키려하기 때문입니다. 먼저 두 모형으로 부터 data를 전처리한 다음, stage-wise 방법으로 학습합니다. target data의 classification을 위한 각 stream 네트워크 파라미터를 fine-tune합니다. 이후에 fusion 네트워크로 함께 학습되죠. 
+
+---
+
+#### Input Preprocessing
+
+ImageNet으로 사전학습된 CNN을 온전히 활용하기 위하여, RGB와 depth input data를 원래 ImageNet input의 종류에 호완될 수 있도록 전처리합니다. 특히, CaffeNet을 사용하는데, CaffeNet은 더 큰 256x256 RGB 이미지로 부터 무작위로 crop하여 227x227 RGB image를 input으로 취합니다. 
