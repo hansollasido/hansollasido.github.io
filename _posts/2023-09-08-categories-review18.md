@@ -35,7 +35,7 @@ Object Recognition관련된 논문이자, CNN 뿐만아니라 encoding도 적절
 
 RGB-D object recognition은 robotics나 indoor, outdoor에 많은 application의 핵심 역할을 담당하고 있습니다. 소프트웨어 지원이 충분하여 비싸지 않고, 복잡한 하드웨어를 요구하지 않고, 특별한 sensing 용량을 제공합니다. 출현과 문맥에 대한 정보를 제공하는 RGB data에 비교해보았을 때, RGB-D는 depth data를 포함하고 있어 object shape의 추가 정보를 제공하고, 빛이나 색깔 변동에도 변동성이 적습니다. 
 
-본 논문은, RGB-D data에 관련한 object recognition에 대해 새로운 방법을 제안합니다. 특히, 완벽하지 않은 센서 데이터에 강한 recognition을 만드려 노력했습니다. 많은 robotic task의 전형적인 시나리오죠. machine learning과 computer vision community에서의 최근 approach에 기반하여 설계했습니다. 특히, CNN을 확장하여 RGB image를 RGB-D image의 영역으로 넓혔습니다. 본 논문이 제안하는 구조는, <Fig 1>에 있습니다. 
+본 논문은, RGB-D data에 관련한 object recognition에 대해 새로운 방법을 제안합니다. 특히, 완벽하지 않은 센서 데이터에 강한 recognition을 만드려 노력했습니다. 많은 robotic task의 전형적인 시나리오죠. machine learning과 computer vision community에서의 최근 approach에 기반하여 설계했습니다. 특히, CNN을 확장하여 RGB image를 RGB-D image의 영역으로 넓혔습니다. 본 논문이 제안하는 구조는, **<Fig 1>**에 있습니다. 
 
 <p align="center"><img src="../../assets/images/091101.png" width="300px" height="300px" title="Multimodal" alt="Multimodal" ><img></p>
 
@@ -58,3 +58,24 @@ RGB stream과 depth stream은 깊은 CNN으로 구성되며, 이 CNN은 ImageNet
 #### Input Preprocessing
 
 ImageNet으로 사전학습된 CNN을 온전히 활용하기 위하여, RGB와 depth input data를 원래 ImageNet input의 종류에 호완될 수 있도록 전처리합니다. 특히, CaffeNet을 사용하는데, CaffeNet은 더 큰 256x256 RGB 이미지로 부터 무작위로 crop하여 227x227 RGB image를 input으로 취합니다. 
+
+처음으로 전처리하는 단계는 image를 적절한 image 크기로 scaling하는 단계입니다. 가장 간단한 방법은 original image를 요구된 image 차원으로 warping하는 방법입니다. **<Fig 3>**처럼요. object recognition 성능이 이 전처리 과정에서 나빠지는 것을 알 수 있었습니다. shape 정보가 이 과정에서 잃어버리기 때문이죠. 
+
+그러므로 다른 전처리 방법을 사용하였습니다. 원래 image의 가장 긴 부분을 256 pixel로 scale하여 256 x N 또는 N x 256 사이즈로 만드는 방법입니다. 그다음, 가장 긴 쪽을 짧은 쪽 축에 따라 tile을 만듭니다. RGB나 depth 이미지는 object border 주위의 인위적인 context을 보여줍니다. (**<Fig 3>**참고). RGB와 depth image 둘다 같은 scaling operation을 적용하였습니다. 
+
+<p align="center"><img src="../../assets/images/091202.png" width="300px" height="300px" title="Multimodal" alt="Multimodal" ><img></p>
+
+RGB 이미지는 이 전처리 단계를 지나고 다음 CNN의 input으로 직접 쓰이게 되는 반면, rescaled된 depth data는 추가적인 단계를 거칩니다. 이를 실현하기 위해, ImageNet에서 훈련된 네트워크는 특정 input distribution에 따라 학습되었다는 것을 기억해야합니다. 즉, depth sensor와는 호환되지 않죠. 그럼에도 불구하고 **<Fig 4>**를 보면, RGB 이미지에 많은 특징들을 정의할 수 있습니다. depth data도 볼 수 있죠. 이러한 것은 ImageNet으로 학습된 CNN을 위해 input으로 depth data의 rendered 버젼으로 사용하므로 만들어낼 수 있습니다. 본 논문의 실험에서 depth 에서 image로 만드는 것은 encoding 방법으로 할 수 있습니다. 두 encoding 방법이 있는데 (1)는  depth data를 grayscale로 만들고 grayscale 값을 세 channel로 만듭니다. (2)는 각 노멀 벡터의 차원이 결과 이미지의 한 채널에 해당하는 표면 노멀을 사용합니다. 더 복잡한 방법으로, HHA 인코딩이라 불리는 것은 세 channel에 지상 위의 높이, 수평 차이, 그리고 표면 노멀과 중력 방향 사이의 픽셀별 각도를 인코딩합니다. 
+
+본 논문의 encoding은 HHA encoding보다도 훨씬 뛰어난 성능을 보여주는 것을 확인하였습니다. 모든 depth 값을 0~255사이의 값으로 정규화하고, 다음 jet colormap를 적용하여 주어진 image를 한 개의 channel에서 세 개의 channel로 변경시킵니다. 
+
+distance에 map하여 color 값을 적용하였습니다. 가까운 것은 빨강, 먼 것은 파랑으로 depth 정보를 넣어 RGB channel로 만들었습니다. 네트워크가 RGB 이미지를 위하여 설계되었기 때문에, depth와 RGB image 사이의 흔한 구조를 제공하여 적절한 특징을 학습하도록 만듭니다. 
+
+---
+
+#### 실험 결과
+
+<p align="center"><img src="../../assets/images/091203.png" width="300px" height="300px" title="Multimodal" alt="Multimodal" ><img></p>
+
+depth를 encoding하여 RGB channel에 합하니 굉장한 성능을 보여주네요. 
+
