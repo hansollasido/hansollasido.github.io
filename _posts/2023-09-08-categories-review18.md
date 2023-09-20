@@ -17,8 +17,6 @@ date: 2023-09-08
 last_modified_at: 2023-09-08
 ---
 
-(9/8 작성중)
-
 Object Recognition관련된 논문이자, CNN 뿐만아니라 encoding도 적절하게 섞은 Multimodal Deep Learning입니다. 
 
 ---
