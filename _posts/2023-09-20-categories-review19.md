@@ -106,3 +106,8 @@ memory efficiency를 세분화하여 분석해보았습니다.
 <p align="center"><img src="../../assets/images/092003.jpg" width="500px" height="500px" title="Predator" alt="Predator" ><img></p>
 
 **<fig 2>**는 worst-case일 때의 memory efficiency를 나타냅니다. 
+
+---
+
+### Proposed Solution
+
