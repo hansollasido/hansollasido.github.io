@@ -40,6 +40,8 @@ categories:
     children:
       - title: "반도체"
         url: /categories/반도체/
+      - title: "컴퓨터구조"
+        url: /categories/컴퓨터구조/
       - title: "Linux"
         url: /categories/Linux/
       - title: "Docker"
