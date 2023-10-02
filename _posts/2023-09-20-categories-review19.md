@@ -111,3 +111,12 @@ memory efficiency를 세분화하여 분석해보았습니다.
 
 ### Proposed Solution
 
+#### Memory access groups
+
+본 논문의 memory controller 설계는 세 memory access groups인 read group, write group, refresh group이 있습니다. 
+
+read와 write group은 모든 bank에서 연속적으로 하나의 read나 write burst로 구성되어 있습니다. 이는 bank preparation의 사용을 최대화하기 위해 memory access하는 최적의 방법입니다. 
+
+이 access 방식의 문제점은 memory가 $BL \times n_{banks}\times = w_{mem}$ B의 고정된 세분화로 access된다는 것입니다. 여기서 $n_{banks}$는 bank의 수를 말하고, $w_{mem}$은 memory interface의 width를 나타냅니다. 
+
+<!-- 4 bank와 8 word의 burst를 가진 본 논문의 예시 memory는 64B입니다. 몇 SoC는 SDRAM의 효율성을 갖고 설계되며, 가능한  -->
