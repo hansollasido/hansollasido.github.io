@@ -1,6 +1,6 @@
 ---
-title: "컴퓨터구조 공부"
-excerpt: "컴퓨터구조1"
+title: "컴퓨터구조 공부1"
+excerpt: "Computer Performance"
 
 categories:
   - 컴퓨터구조
