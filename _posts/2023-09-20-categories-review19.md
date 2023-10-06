@@ -117,6 +117,10 @@ memory efficiency를 세분화하여 분석해보았습니다.
 
 read와 write group은 모든 bank에서 연속적으로 하나의 read나 write burst로 구성되어 있습니다. 이는 bank preparation의 사용을 최대화하기 위해 memory access하는 최적의 방법입니다. 
 
-이 access 방식의 문제점은 memory가 $BL \times n_{banks}\times = w_{mem}$ B의 고정된 세분화로 access된다는 것입니다. 여기서 $n_{banks}$는 bank의 수를 말하고, $w_{mem}$은 memory interface의 width를 나타냅니다. 
+이 access 방식의 문제점은 memory가 $BL \times n_{banks}\times = w_{mem}$ B의 고정된 세분화로 access된다는 것입니다. 여기서 $n_{banks}$는 bank의 수를 말하고, $w_{mem}$은 memory interface의 width를 나타냅니다. 4 bank와 8 words 길이의 burst를 가진 예시 memory는 64B와 동일하죠. 몇 SoC는 SDRAM의 효율성으로 설계되어 가능하다면 IP 사이즈를 조정할 수 있습니다. 이 세분화된 access는 전형적인 L2 cache 사이즈에 잘 맞으며, TriMedia 3270 같은 특정 processor의 L1 cache 라인에서도 잘 맞습니다. 
+
+read나 write mask를 적용하여 더 작은 세분화된 access를 할 수 있고, data efficiency에 영향을 주는 원치않는 data를 버릴 수 있습니다. 
+
+Read와 Write group은 requestor 사이의 interface를 제거할 수 있도록 설계되었습니다. 
 
 <!-- 4 bank와 8 word의 burst를 가진 본 논문의 예시 memory는 64B입니다. 몇 SoC는 SDRAM의 효율성을 갖고 설계되며, 가능한  -->
