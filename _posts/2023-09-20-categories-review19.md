@@ -121,6 +121,14 @@ read와 write group은 모든 bank에서 연속적으로 하나의 read나 write
 
 read나 write mask를 적용하여 더 작은 세분화된 access를 할 수 있고, data efficiency에 영향을 주는 원치않는 data를 버릴 수 있습니다. 
 
-Read와 Write group은 requestor 사이의 interface를 제거할 수 있도록 설계되었습니다. 
+Read와 Write group은 requestor 사이의 interface를 제거할 수 있도록 설계되었습니다. 이는 이전 request로 인한 delay cycles 없이 arbitrary row를 activated할 수 있게 만듭니다. 이것을 유지하기 위해서는 두 timing 제약이 반드시 있어야합니다.
 
-<!-- 4 bank와 8 word의 burst를 가진 본 논문의 예시 memory는 64B입니다. 몇 SoC는 SDRAM의 효율성을 갖고 설계되며, 가능한  -->
+첫 번째로, 같은 bank에 연속적인 activate command 사이의 최소 *tRC* cycle가 있어야 합니다. 
+
+두 번째로, 새로운 activate command가 해당 bank에 issue되기 전에 가장 마지막 write burst의 완료로 부터 최소의 *tWR*+*tRP* cycle이 있어야합니다. 
+
+이러한 제약 조건에 해당되면 모든 bank간 충돌이 고려됩니다. 
+
+<Figure 3>을 보면, read와 write group을 보여줍니다. pipeline이 잘되어 있고 매우 효율적인 것을 보여줍니다. 
+
+<p align="center"><img src="../../assets/images/100906.jpg" width="500px" height="500px" title="Predator" alt="Predator" ><img></p>
