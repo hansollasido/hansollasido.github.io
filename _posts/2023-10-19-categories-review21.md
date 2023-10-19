@@ -88,3 +88,86 @@ xyz 좌표를 distnace function이나 occupancy field로 mapping하는 deep netw
 
 ### Volume Rendering with Radiance Fields
 
+$\sigma(\mathbf{x})$는 $\mathbf{x}$위치에서의 volume density를 의미하며, expected color $C(\mathbf{r})$, camera ray $\mathbf{r}(t)=\mathbf{o}+t\mathbf{d}$를 의미합니다.
+
+<center>
+
+$C(r)=\int_{t_n}^{t_f}T(t)\sigma(\mathbf{r}(t))\mathbf{c}(\mathbf{r}(t),\mathbf{d})dt$, where $T(t)=\exp(-\int_{t_n}^{t}\sigma(\mathbf{r}(s)))ds$
+
+</center>
+
+함수 $T(t)$는 $t_n$에서 $t$까지의 ray의 축적된 투과율입니다. 이는 즉, 다른 입자를 치지 않고 $t_n$에서 $t$까지의 ray가 지나갈 확률을 뜻하죠. neural radiance field로부터 rendering하면 integral $C(\mathbf{r})$를 예상하는 것이 요구됩니다. 이를 통해 camera ray가 가상의 camera의 각 pixel를 통한 ray를 trace할 수 있죠. 
+
+본 논문은 quadrature를 사용하여 integral을 예측합니다. MLP는 오직 고정된 discrete한 location을 조회하기 때문에, deterministic quadrature은 효과적으로 표현법의 해상도를 제한할 수 있습니다. 대신에 본 논문은 sampling을 하여 $[t_n,t_f]$를 $N$개의 균등한 bin으로 나누고 각 bin에서 무작위로 균등하게 sample을 이끌어냅니다. 
+
+<center>
+
+$t_i \sim u[t_n+\frac{i-1}{N}(t_f-t_n), t_n+\frac{i}{N}(t_f-t_n)]$
+
+</center>
+
+integral을 예측하기 위해 discrete한 sample set을 사용하였지만, smapling은 scene representation을 표현하도록 가능하게 만들었습니다. 몇 sample을 사용하여 $C(\mathbf{r})$를 quadrature rule로 계산하는데, 아래와 같습니다.
+
+<center>
+
+$\hat{C}(\mathbf{r})=\sum_{i=1}^NT_i(1-\exp(-\sigma _i\delta _i))\mathbf{c}_i$ , where $T_i=\exp(-\sum_{j=1}^{i-1}\sigma _j \delta _j)$
+
+</center>
+
+근접한 sample 사이의 거리는 $\delta_i = t_{i+1}-t_i$입니다. 
+
+
+---
+
+### Optimizing a Neural Radiance Field
+
+위와 같은 식으로는 충분한 것 같지 않은 것을 발견하였습니다. 이에 본 논문은 고해상도의 복잡한 scene을 표현할 수 있도록 두 가지 성능 향상을 도입하였습니다. 첫 번째로, MLP에서 고주파수를 표현할 수 있도록 input에 positional encoding을 두었습니다. 두 번째로, 고주파수 표현법을 효과적으로 sample할 수 있도록 계층적 sampling 절차를 진행했습니다. 
+
+---
+
+#### Positional encoding
+
+neural network가 universal function approximators임에 불구하고, $F_{\Theta}$가 바로 $xyz\theta\phi$를 input으로 받아 rendering하면 고주파수에서 성능이 떨어진다는 것을 발견했습니다. input을 더 높은 차원으로 mapping하는데, network에 보내기전 고주파수 함수를 사용하면, 고주파수 변동을 포함한 더 적절한 data를 만들 수 있습니다. 
+
+본 논문은 이를 활용하여 두 함수 $F_{\Theta}=F_{\Theta}'\circ\gamma$로 변형했습니다. $\gamma$는 $\mathbb{R}$를 더 높은 차원 공간 $\mathbb{R}^{2L}$로 mapping하는 데에 쓰이며, $F'_{\Theta}$는 단순한 MLP입니다. encoding 식은 아래와 같습니다.
+
+<center>
+
+$\gamma(p)=(sin(2^0\pi p),cos(2^0\pi p), \cdots, sin(2^{L-1}\pi p), cos(2^{L-1}\pi p))$
+
+</center>
+
+$\gamma(\dot)$ 는 $\mathbf{x}$에서 3 개의 좌표를 각각 따로 적용합니다. 실험적으로 $\gamma(\mathbf{x})$에서는 L=10, $\gamma(\mathbf{d})$에서는 L=4로 설정하였습니다. *positional encoding*로 불리는 Transformer의 한 구조라고 생각이 들겠지만, Transformer에서 *positional encoding*은 sequence에 discrete한 position을 부여하기 위하여 사용하지만, 순서에 관련된 개념은 들어가지 않습니다. 하지만 본 논문은 고차원 공간으로 input 좌표를 mapping하기 위하여 사용하기에 MLP를 좀 더 쉽게 고주파수 함수로 근사화하기 쉽습니다. 
+
+---
+
+#### Hierarchical volume sampling
+
+두 개의 network를 최적화 합니다. "coarse", "fine"
+
+sampling을 사용하여 $N_c$ 위치에서 sample을 먼저 한 다음, "coarse"를 평가합니다. 그 다음, $N_f$ 위치에서 inverse transform sampling으로 "fine"을 평가합니다. 
+
+<p align="center"><img src="../../assets/images/101905.png" width="300px" height="300px" title="NeRF" alt="NeRF" ><img></p>
+
+---
+
+#### Implementation details
+
+<p align="center"><img src="../../assets/images/101906.png" width="300px" height="300px" title="NeRF" alt="NeRF" ><img></p>
+
+위는 loss를 구하는 식입니다. 
+
+---
+
+### Results
+
+
+<p align="center"><img src="../../assets/images/101907.png" width="500px" height="700px" title="NeRF" alt="NeRF" ><img></p>
+
+<p align="center"><img src="../../assets/images/101908.png" width="500px" height="700px" title="NeRF" alt="NeRF" ><img></p>
+
+<p align="center"><img src="../../assets/images/101909.png" width="500px" height="500px" title="NeRF" alt="NeRF" ><img></p>
+
+<p align="center"><img src="../../assets/images/101910.png" width="500px" height="700px" title="NeRF" alt="NeRF" ><img></p>
+
+<p align="center"><img src="../../assets/images/101911.png" width="500px" height="500px" title="NeRF" alt="NeRF" ><img></p>
