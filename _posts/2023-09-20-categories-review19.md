@@ -129,6 +129,19 @@ Read와 Write group은 requestor 사이의 interface를 제거할 수 있도록 
 
 이러한 제약 조건에 해당되면 모든 bank간 충돌이 고려됩니다. 
 
-<Figure 3>을 보면, read와 write group을 보여줍니다. pipeline이 잘되어 있고 매우 효율적인 것을 보여줍니다. 
+<Figure 3>을 보면, read와 write group을 보여줍니다. pipeline이 잘되어 있고 매우 효율적인 것을 보여줍니다. 1
 
 <p align="center"><img src="../../assets/images/100906.jpg" width="500px" height="500px" title="Predator" alt="Predator" ><img></p>
+
+
+read/write effiency는 아래의 식으로 계산됩니다. 여기서 $t_{group}$은 read와 write group에서 cycle의 수를 말합니다. 
+
+ <center>
+
+$e_{rw}=\frac{2\times BL/2 \times n_{banks}}{2\times t_{groups}+t_{rtw}+t_{wtr}}$
+
+ </center>
+
+ 위 식은 하나의 read와 write gorup이 이동되었을 때의 cycle를 말하며, switch의 최대 횟수를 말합니다. 
+
+ refresh group은 single refresh command가 issued되는데, 10 NOP command 뒤에 따라옵니다. 
