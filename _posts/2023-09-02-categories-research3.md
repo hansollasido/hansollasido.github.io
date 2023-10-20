@@ -37,6 +37,15 @@ Computer Architecture
 
 ---
 
+## 논문 검색 사이트 
+
+1. [Google Scholar](https://scholar.google.com/)
+2. [IEEE Xplore](https://ieeexplore.ieee.org/Xplore/home.jsp)
+3. [ACM Digital Library](https://dl.acm.org/)
+4. [PubMed](https://pubmed.ncbi.nlm.nih.gov/)
+
+---
+
 ## AMBA란?
 
 AMBA (Advanced Microcontroller Bus Architecture)
