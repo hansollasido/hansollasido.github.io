@@ -17,9 +17,9 @@ date: 2023-09-02
 last_modified_at: 2023-09-02
 ---
 
-## Good PIM Conference
+## Good Conference
 
-Computer Architecture 관련된 학회가 PIM 관련된 학회라 볼 수 있음.
+Computer Architecture
 
 1. ISCA (International Symposium on Computer Architecture) 
 2. HPCA (High-Performance Computer Architecture)
@@ -28,6 +28,12 @@ Computer Architecture 관련된 학회가 PIM 관련된 학회라 볼 수 있음
 5. DAC (Design Automation Conference)
 6. DATE (Design, Automation, and Test in Europe)
 7. MEMSYS (International Symposium on Memory Systems)
+
+---
+
+## Other Conference
+
+1. ACM Transactions on Architecture and Code Optimization
 
 ---
 
