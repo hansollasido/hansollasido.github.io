@@ -46,6 +46,12 @@ Computer Architecture
 
 ---
 
+## Onur Mutlu Professor
+
+- 이분 관련된 논문 참고 [링크](https://scholar.google.com/scholar?hl=ko&as_sdt=0%2C5&q=Onur+Mutlu&btnG=)
+
+---
+
 ## AMBA란?
 
 AMBA (Advanced Microcontroller Bus Architecture)
