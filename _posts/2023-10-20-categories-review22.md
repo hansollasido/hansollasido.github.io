@@ -67,9 +67,35 @@ Extreme에서 system 성능은 shortest-job-first라는 원칙을 적용하여 �
 
 <p align="center"><img src="../../assets/images/102302.png" width="500px" height="500px" title="DMPS" alt="DMPS" ><img></p>
 
+---
+
+### Background
+
+#### DRAM-Based Memory System
+
+<fig 2(a)>에서 channel, rank, bank로 계층적으로 조직된 멀티코어 시스템에서의 전형적인 DRAM-based memory 시스템인 것을 보여줍니다. 각 channel은 독립적인 address와 command 그리고 data bus를 갖고 있으며 최고의 병렬성을 달성할 수 있습니다. 각 channel은 여러 rank로 구성되어 있고, 각 rank는 동시에 작동하는 여러 bank로 구성되어 있습니다. Rank와 bank는 병렬적으로 동작할 수 있지만, channel 내의 모든 rank와 bank가 주소, 명령 및 데이터 bus를 공유하기 때문에 병렬성의 정도는 낮습니다. bank는 2차원 data 배열로 되어 있으며, row와 column을 가집니다. 각 bank에 있는 내부 구조로 row buffer가 있는데, data 배열과 memory controller 사이에서 interface의 역할을 하고 있습니다. row buffer의 상태에 의거하여 memory access가 세 가지 분류로 나뉩니다. : row buffer에서 현재 open되어 있는 row에 access하는 경우를 **row hit**, closed된 row buffer에 access하는 경우를 **row closed**, row buffer에 현재 open되어 있는 row의 다른 row에 접근하는 경우를 **row conflict**라고 부릅니다. <fig 2(b)>는 세 가지 분류에서의 access latency를 보여줍니다. row hit, closed, conflict의 latency는 $t_{CAS}$, $t_{RCD}+t_{CAS}$ 그리고 $t_{RP}+t_{RCD}+t_{CAS}$ 입니다. 보통 row hit는 row closed보다 대략 두 배 빠르게 처리되며, row conflict보다 거의 세 배 빠르게 처리됩니다. 따라서 start-of-the-art memory scheduler들은 DRAM throughput을 최대화하기 위하여 다른 요청들보다 row-hit request를 우선시합니다. 멀티 코어 환경에서 application-unaware scheduling 정책으로 인해, 시스템 성능과 공정성이 좋지 않습니다. FRFCFS는 높은 row-buffer 지역성과 높은 memory 강도를 가진 application의 request를 우대하며, 다른 application의 request를 지연시키거나 심지어 starving하기도 합니다. 
+
+연속적인 많은 row hit가 동일한 bank에 대한 다른 application의 row-closed 또는 row-conflict request를 starving할 수 있기 때문에, FRFCFS-Cap은 동일한 bank에 대한 더 오래된 row access보다 더 어린 column access의 수를 모니터링하기 위해 bank counter를 사용합니다. counter가 Cap parameter 아래인 bank들에 대해서는 FRFCFS 정책이 적용되며, counter가 Cap parameter를 초과하는 bank에 대해서는 공정성을 위해 FCFS 정책이 적용되고 counter는 0으로 재설정됩니다. 그러므로 FRFCFS-Cap은 row-buffer 지역성이 높은 application으로 부터 온 request의 문제를 완화시킵니다. 하지만 FRFCFS-Cap은 memory를 많이 사용하지 않는 application의 request를 처벌하는 FCFS의 본질적인 문제를 해결할 수 없습니다. 
 
 ---
 
+#### [(3)Application-Unaware Memory Schedulers](#추가설명)
+
+FRFCFS는 흔히 쓰이는 memory scheduling 알고리즘입니다. 다른 requests보다 row-hit requests로부터의 ready command를 우선시하고, 만일 row-hit 상태가 동일하면 더 오래된 request를 다른 젊은 request보다 먼저하게 합니다. FRFCFS의 목적은 memory access의 service latency의 평균을 최소화하고 DRAM throughput을 최대화하는 것입니다. FRFCFS는 단일 쓰레드 시스템에서 가장 평균적인 성능이 좋은 것을 보여줍니다. [Rixner et al. 2000] 그러나, FRFCFS는 멀티코어 system에서 application-unaware좋지 않은 system 성능과 
+
+---
+
+#### [(4) Application-Aware Memory Schedulers](#추가설명)
+
+멀티 코어 환경에서, FRFCFS기반의 application-aware memory scheduler는 두 방향으로 발전되었습니다. : 메모리 interference의 영향을 정확하게 측정하고 제어하여 예측 가능한 성능을 제공하기 위해, 예를 들면 stall-time fair memory scheduler(STFM) [Mutlu and Moscibroda 2007], fairness via source throttle (FST) [Ebrahimi et al. 2010], per-thread cycle accounting [Eyerman and Eeckhout 2009], memory interference–induced slowdown estimation (MISE) [Subramanian et al. 2013], 그리고 the application slowdown model (ASM) [Subramanian et al. 2015]와 같은 방법을 사용합니다. HW accelerators (HWAs)를 달고 있는 heterogeneous 환경에서 DASH [Usui et al. 2016]은 HWA의 deadline을 만족하고, 높은 CPU 성능을 제공하기 위해 설계되었습니다. COTS 기반의 multicore 환경에서 Kim 등은 request와 job=driven 기법을 결합하여 가장 최악의 경우에서의 memory interference 경계를 이뤘습니다. Kim 등은 동일한 코어에서 전용 DRAM bank와 함께 memory 집약적인 작업을 함께 배치하여 작업 간의 memory interference를 줄이고 고성능 및 공정성을 위해 interference을 완화하는 memory interference 지향적인 작업 할당 알고리즘을 개발하였습니다. 예를 들면, daptive history–based memory scheduler (AHB) [Hur and Lin 2004], the RL-based memory scheduler (RLMS) [Ipek et al. 2008], the fair thread-aware memory scheduler (FTAM) [Zhu et al. 2010], the request density–aware fair memory scheduler (RDAF) [Ikeda et al. 2012], the multiobjective reconfigurable self-optimizing memory scheduler (MORSE) [Mukundan and Mart´ınez 2012], PARBS, TCM, ATLAS, BLISS 등이 있습니다. 
+
+---
+
+##### Application-Based Marking
+
+PARBS은 memory request를 batch로 그룹화하고 오래된 batch를 최근 것보다 먼저 진행하여, application전반의 공정성과 request에 starvation freedom을 제공합니다. PARBS는 
+
+---
 
 ### 추가설명
 
@@ -81,3 +107,10 @@ Extreme에서 system 성능은 shortest-job-first라는 원칙을 적용하여 �
 
 - 메모리에 대한 access 빈도나 메모리 사용량을 나타내는 지표임. 즉, 프로그램 또는 작업이 주어진 시간 동안 얼마나 많은 메모리 access를 요청하는지를 나타내는 것을 의미할 수 있음. 고메모리 강도면 메모리 시스템에 더 큰 부하를 주는 경향이 있으며, 메모리 scheduling이나 resource allocation에서 특별한 전략이 필요할 수 있음. 
 
+(3) Application-Unaware
+
+- 특정 application의 특성이나 요구 사항을 고려하지 않고 동작하는 시스템이나 메커니즘을 말함. 예를 들어, Application-Unaware memory scheduler는 실행 중인 application의 특정 메모리 request 사항이나 동작 패턴을 고려하지 않고 메모리 access request를 처리함. 일반적으로 고려해야할 변수나 조건이 적기 때문에 단순하지만, 다양한 application의 특성에 따라 최적의 성능을 제공하기 어려울 수 있음. 
+
+(4) Application-Aware
+
+- 특정 application의 특성이나 요구 사항을 인식하고 그에 따라 동작하는 시스템이나 메커니즘을 말함. 실행 중인 application의 특정 요구 사항, 동작 패턴, 또는 성능 목표를 고려하여 최적화된 성능을 제공하려고 함. 이러한 접근 방식은 각 application의 개별적인 요구 사항에 맞게 자원을 할당하거나 우선순위를 조정하여 전체 시스템의 효율성을 향상시키는 데 도움이 됨. 
