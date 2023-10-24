@@ -93,7 +93,9 @@ FRFCFS는 흔히 쓰이는 memory scheduling 알고리즘입니다. 다른 reque
 
 ##### Application-Based Marking
 
-PARBS은 memory request를 batch로 그룹화하고 오래된 batch를 최근 것보다 먼저 진행하여, application전반의 공정성과 request에 starvation freedom을 제공합니다. PARBS는 
+PARBS은 memory request를 batch로 그룹화하고 오래된 batch를 최근 것보다 먼저 진행하여, application전반의 공정성과 request에 starvation freedom을 제공합니다. PARBS는 bank 부하를 선택하여 application의 memory access behavior를 특성화하고, max-total scheme을 사용하여 application 간의 순위를 형성합니다. 시스템 성능을 극대화하기 위해, 주로 memory 집중적이지 않은 높은 순위 application 및 row-hit request가 우선 순위로 먼저 설정됩니다. 일괄 처리 내에서의rank 기반 우선 순위 설정은 application 내 bank-level 병렬성을 유지합니다. 그러나 PARBS는 여러 memory controller 사이의 application 내 bank-level 병렬성을 유지할 수 없습니다. 왜냐하면, batch 시작할 때 application의 순위가 계산되고, batch의 미세한 정밀도로 인해 PARBS는 중요한 조정이 필요합니다. 
+
+ATLAS는 여러 memory controller에서 얻은 서비스를 선택하여 application의 memory access behavior을 특성화 하고 long-term behavior을 고려합니다. ATLAS의 목적은 높은 system 성능과 scalability를 얻어 core와 memory controller의 수를 늘리는 것입니다. application은 엄격하게 우선 순위가 매겨지며, 가장 낮은 서비스를 받는 application이 가장 높은 우선 순위를 받습니다. 그러나 system 성능의 증가는 공정성을 희생하는 대가로 옵니다. memory 사용이 적은 application이 엄격하게 우선하여 memory 집중적인 application은 높은 latency를 갖게 됩니다. 
 
 ---
 
@@ -114,3 +116,7 @@ PARBS은 memory request를 batch로 그룹화하고 오래된 batch를 최근 �
 (4) Application-Aware
 
 - 특정 application의 특성이나 요구 사항을 인식하고 그에 따라 동작하는 시스템이나 메커니즘을 말함. 실행 중인 application의 특정 요구 사항, 동작 패턴, 또는 성능 목표를 고려하여 최적화된 성능을 제공하려고 함. 이러한 접근 방식은 각 application의 개별적인 요구 사항에 맞게 자원을 할당하거나 우선순위를 조정하여 전체 시스템의 효율성을 향상시키는 데 도움이 됨. 
+
+(5) Application의 의미
+
+- 컴퓨터 프로그램이나 프로세스를 의미함. 멀티코어나 멀티스레드 환경에서 여러 application(또는 작업, task, process)이 동시에 실행될 수 있음. 이러한 application들은 resource(memory, CPU, I/O 등)에 대한 access를 경쟁적으로 수행하며, 이로 인해 서로 간의 interference나 performance 저하가 발생할 수 있음. application의 특성에 따라 scheduler는 효율적인 memory access 순서를 결정하게 됨.
