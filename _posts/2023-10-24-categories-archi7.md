@@ -128,4 +128,22 @@ VPN과 PFN이 있다. VPN은 Virtual page number의 약자이고 PFN은 Physical
   - Typical: 16-512 PTEs, 0.5-1 cycle for hit, 10-100 cycles for miss, 0.01%-1% miss rate
   - Misses could be handled by hardware or software
 
-  
+<p align="center"><img src="../../assets/images/102501.png" width="300px" height="300px" title="VM" alt="VM" ><img></p>
+
+**TLB Missess**
+
+- If page is in memory
+  - Load the PTE from memory and retry
+
+- If page is not in memory (page fault)
+  - Locate page on disk
+  - Choose page to replace
+    - If dirty, write to disk first
+  - Read page into memory and update page table
+  - Then restart the faulting instruction
+
+즉, memory에 없으면 disk에서 찾아본다는 얘기임. 
+
+<p align="center"><img src="../../assets/images/102502.png" width="300px" height="300px" title="VM" alt="VM" ><img></p>
+
+
