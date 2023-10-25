@@ -73,15 +73,17 @@ Extreme에서 system 성능은 shortest-job-first라는 원칙을 적용하여 �
 
 #### DRAM-Based Memory System
 
-<fig 2(a)>에서 channel, rank, bank로 계층적으로 조직된 멀티코어 시스템에서의 전형적인 DRAM-based memory 시스템인 것을 보여줍니다. 각 channel은 독립적인 address와 command 그리고 data bus를 갖고 있으며 최고의 병렬성을 달성할 수 있습니다. 각 channel은 여러 rank로 구성되어 있고, 각 rank는 동시에 작동하는 여러 bank로 구성되어 있습니다. Rank와 bank는 병렬적으로 동작할 수 있지만, channel 내의 모든 rank와 bank가 주소, 명령 및 데이터 bus를 공유하기 때문에 병렬성의 정도는 낮습니다. bank는 2차원 data 배열로 되어 있으며, row와 column을 가집니다. 각 bank에 있는 내부 구조로 row buffer가 있는데, data 배열과 memory controller 사이에서 interface의 역할을 하고 있습니다. row buffer의 상태에 의거하여 memory access가 세 가지 분류로 나뉩니다. : row buffer에서 현재 open되어 있는 row에 access하는 경우를 **row hit**, closed된 row buffer에 access하는 경우를 **row closed**, row buffer에 현재 open되어 있는 row의 다른 row에 접근하는 경우를 **row conflict**라고 부릅니다. <fig 2(b)>는 세 가지 분류에서의 access latency를 보여줍니다. row hit, closed, conflict의 latency는 $t_{CAS}$, $t_{RCD}+t_{CAS}$ 그리고 $t_{RP}+t_{RCD}+t_{CAS}$ 입니다. 보통 row hit는 row closed보다 대략 두 배 빠르게 처리되며, row conflict보다 거의 세 배 빠르게 처리됩니다. 따라서 start-of-the-art memory scheduler들은 DRAM throughput을 최대화하기 위하여 다른 요청들보다 row-hit request를 우선시합니다. 멀티 코어 환경에서 application-unaware scheduling 정책으로 인해, 시스템 성능과 공정성이 좋지 않습니다. FRFCFS는 높은 row-buffer 지역성과 높은 memory 강도를 가진 application의 request를 우대하며, 다른 application의 request를 지연시키거나 심지어 starving하기도 합니다. 
-
-연속적인 많은 row hit가 동일한 bank에 대한 다른 application의 row-closed 또는 row-conflict request를 starving할 수 있기 때문에, FRFCFS-Cap은 동일한 bank에 대한 더 오래된 row access보다 더 어린 column access의 수를 모니터링하기 위해 bank counter를 사용합니다. counter가 Cap parameter 아래인 bank들에 대해서는 FRFCFS 정책이 적용되며, counter가 Cap parameter를 초과하는 bank에 대해서는 공정성을 위해 FCFS 정책이 적용되고 counter는 0으로 재설정됩니다. 그러므로 FRFCFS-Cap은 row-buffer 지역성이 높은 application으로 부터 온 request의 문제를 완화시킵니다. 하지만 FRFCFS-Cap은 memory를 많이 사용하지 않는 application의 request를 처벌하는 FCFS의 본질적인 문제를 해결할 수 없습니다. 
+<fig 2(a)>에서 channel, rank, bank로 계층적으로 조직된 멀티코어 시스템에서의 전형적인 DRAM-based memory 시스템인 것을 보여줍니다. 각 channel은 독립적인 address와 command 그리고 data bus를 갖고 있으며 최고의 병렬성을 달성할 수 있습니다. 각 channel은 여러 rank로 구성되어 있고, 각 rank는 동시에 작동하는 여러 bank로 구성되어 있습니다. Rank와 bank는 병렬적으로 동작할 수 있지만, channel 내의 모든 rank와 bank가 주소, 명령 및 데이터 bus를 공유하기 때문에 병렬성의 정도는 낮습니다. bank는 2차원 data 배열로 되어 있으며, row와 column을 가집니다. 각 bank에 있는 내부 구조로 row buffer가 있는데, data 배열과 memory controller 사이에서 interface의 역할을 하고 있습니다. row buffer의 상태에 의거하여 memory access가 세 가지 분류로 나뉩니다. : row buffer에서 현재 open되어 있는 row에 access하는 경우를 **row hit**, closed된 row buffer에 access하는 경우를 **row closed**, row buffer에 현재 open되어 있는 row의 다른 row에 접근하는 경우를 **row conflict**라고 부릅니다. <fig 2(b)>는 세 가지 분류에서의 access latency를 보여줍니다. row hit, closed, conflict의 latency는 $t_{CAS}$, $t_{RCD}+t_{CAS}$ 그리고 $t_{RP}+t_{RCD}+t_{CAS}$ 입니다. 보통 row hit는 row closed보다 대략 두 배 빠르게 처리되며, row conflict보다 거의 세 배 빠르게 처리됩니다. 따라서 start-of-the-art memory scheduler들은 DRAM throughput을 최대화하기 위하여 다른 요청들보다 row-hit request를 우선시합니다. 
 
 ---
 
 #### [(3)Application-Unaware Memory Schedulers](#추가설명)
 
-FRFCFS는 흔히 쓰이는 memory scheduling 알고리즘입니다. 다른 requests보다 row-hit requests로부터의 ready command를 우선시하고, 만일 row-hit 상태가 동일하면 더 오래된 request를 다른 젊은 request보다 먼저하게 합니다. FRFCFS의 목적은 memory access의 service latency의 평균을 최소화하고 DRAM throughput을 최대화하는 것입니다. FRFCFS는 단일 쓰레드 시스템에서 가장 평균적인 성능이 좋은 것을 보여줍니다. [Rixner et al. 2000] 그러나, FRFCFS는 멀티코어 system에서 application-unaware좋지 않은 system 성능과 
+FRFCFS는 흔히 쓰이는 memory scheduling 알고리즘입니다. 다른 requests보다 row-hit requests로부터의 ready command를 우선시하고, 만일 row-hit 상태가 동일하면 더 오래된 request를 다른 젊은 request보다 먼저하게 합니다. FRFCFS의 목적은 memory access의 service latency의 평균을 최소화하고 DRAM throughput을 최대화하는 것입니다. FRFCFS는 단일 쓰레드 시스템에서 가장 평균적인 성능이 좋은 것을 보여줍니다. [Rixner et al. 2000] 그러나, FRFCFS는 멀티코어 system에서 application을 고려하지 않는 scheduling policy로 인해 시스템 성능과 공정성이 떨어집니다. FRFCFS는 높은 row-buffer 지역성과 높은 memory 강도를 가진 application의 request를 우대하며, 다른 application의 request를 지연시키거나 심지어 starving하기도 합니다. 
+
+연속적인 많은 row hit가 동일한 bank에 대한 다른 application의 row-closed 또는 row-conflict request를 starving할 수 있기 때문에, FRFCFS-Cap은 동일한 bank에 대한 더 오래된 row access보다 더 어린 column access의 수를 모니터링하기 위해 bank counter를 사용합니다. counter가 Cap parameter 아래인 bank들에 대해서는 FRFCFS 정책이 적용되며, counter가 Cap parameter를 초과하는 bank에 대해서는 공정성을 위해 FCFS 정책이 적용되고 counter는 0으로 재설정됩니다. 그러므로 FRFCFS-Cap은 row-buffer 지역성이 높은 application으로 부터 온 request의 문제를 완화시킵니다. 하지만 FRFCFS-Cap은 memory를 많이 사용하지 않는 application의 request를 처벌하는 FCFS의 본질적인 문제를 해결할 수 없습니다. 
+
+
 
 ---
 
@@ -93,24 +95,67 @@ FRFCFS는 흔히 쓰이는 memory scheduling 알고리즘입니다. 다른 reque
 
 ##### Application-Based Marking
 
-PARBS은 memory request를 batch로 그룹화하고 오래된 batch를 최근 것보다 먼저 진행하여, application전반의 공정성과 request에 starvation freedom을 제공합니다. PARBS는 
+PARBS은 memory request를 batch로 그룹화하고 오래된 batch를 최근 것보다 먼저 진행하여, application전반의 공정성과 request에 starvation freedom을 제공합니다. PARBS는 bank 부하를 선택하여 application의 memory access behavior를 특성화하고, max-total scheme을 사용하여 application간의 순위를 형성합니다. 시스템 성능을 최대화하기 위하여, 주로 memory 집중적이지 않은 높은 순위 application 및 row-hit request이 우선 순위로 설정됩니다. batch 내에서의 순위 기반 우선 순위 설정은 application 내 bank-level parallelism을 유지합니다. 그러나, PARBS는 여러 memory controller 간의 application 내 bank-level parallelism을 유지할 수 없습니다. appliaction의 순위는 batch 시작에서 계산되며 batch의 미세한 정밀도로 인해 PARBS는 중요한 조정이 필요합니다. 
+
+ATLAS는 여러 memory controller에서 얻은 서비스를 선택하여 application의 memory access behavior을 특성화하고 long-term behavior를 고려합니다. ATLAS의 목표는 높은 시스템 성능과 scalability를 얻어, core와 memory controller의 개수를 늘리는 것입니다. Application은 엄격하게 우선 순위가 매겨지며 가장 낮은 서비스를 받은 application이 가장 높은 우선 순위를 받습니다. 그러나 시스템 성능의 증가는 공정성을 희생하는 대가로 옵니다. memory 사용이 적은 application이 엄격하게 우선하여 memory 집중적인 application은 높은 latency를 겪게 됩니다. 
+
+TCM은 시스템 성능과 공정성의 목적을 분리하며, application을 두 개의 집단으로 분리하여 각 집단에서 다른 scheduling policy를 적용하여 두 가지 목적을 모두 최적화합니다. 높은 시스템 성능을 얻기 위하여, TCM은 bandwidth 민감한 application보다 latency 민감한 application에 우선순위를 두며, latency 감지 cluster에서는 가장 memory 집중적이지 않은 application이 가장 높은 우선순위를 받도록 엄격한 우선순위를 시행합니다. TCM은 *niceness*라는 새로운 metric을 도입하여 application의 memory access behavior를 특정화시켰습니다. row-buffer 지역성이 높은 application은 다른 application에 대해 덜 협조적이며, 반면 bank-level parallelism이 높은 application은 협조적입니다. 그래서 TCM은 application의 row-buffer 지역성과 bank-level parallelism을 모니터링해야 합니다. 
+
+BLISS는 단순히 application에서 제공된 연속적인 request 수를 세어 application을 두 개의 그룹으로 동적으로 분리하기 때문에 HW 복잡도와 비용이 낮습니다. memory interference를 완화하기 위하여, BLISS는 interference에 취약한 group을 interference를 일으키는 group보다 우선시합니다. 모든 application은 처음에, interference 취약한 group에 있게 됩니다. 한 application이 interference를 심하게 일으켰을 때만 blacklist로 지정되며, interference에 취약한 application에 벌점을 부과합니다. BLISS는 interference을 측정하기 위해 단일 threshold만 사용하므로, memory access behavior의 다양성을 감지할 수 없습니다. 따라서 BLISS는 system 성능이 낮습니다. 
+
+FATM과 RDAF는 memory interference를 측정하기 위하여 MPKC라는 metric을 사용합니다. FATM은 다른 thread로 온 memory request를 다른 queue로 유지하고, 각 queue의 첫 번째 request 중에서 가장 높은 우선순위의 request를 scheduling하여, 동일한 thread에서의 request이 순서를 어길 수 없도록 합니다. FATM은 thread의 우선순위를 계산하기 위하여 thread, arriving time, serving history를 사용합니다. thread $i$의 우선순위 계산식은 다음과 같습니다.
+
+<center>
+
+$P_i=\alpha\times WT_i+\beta\times AST_i+\gamma$, 
+
+<p>
+
+</p>
+
+where $\alpha, \beta, \gamma$ are weights, $WT_i$ is the waiting time of thread $i$, and $AST_i$ is the accumulated serving times of thread $i$
+
+</center>
+
+thread는 언제든지 총 순서로 순위가 매겨집니다. 높은 AST를 가진 thread의 request는 오랜 시간 동안 차단될 수 있습니다. FATM에서 WT는 32bit이고 AST는 16bit이므로 thread 우선 순위의 값이 크게 될 수 있어 복잡도가 높아질 수 있습니다. 반면, DMPS는 memory 점유에 기반하여 thread를 동적으로 다중 level로 우선순위 지정하므로 복잡도가 낮아집니다. 
+
+FDAF는 original TCM의 MPKI를 MPKC로 대체합니다. thread clustering을 위해 latency에 민감한 thread는 마지막 quantum에서 제공된 read request 수를 기준으로 정렬하여 결정됩니다. DMPS는 또한 마지막 quantum에서 thread의 MPKC를 사용하지만, latency에 민감한 thread는 memory 점유를 parameter MOPL과 비교하여 결정하므로 복잡한 정렬 작업을 피합니다. 세세한 우선순위 할당을 위해 DMPS는 여전히 MPKC를 사용하지만, RDAF는 read queue에서 대기 중인 read request 수인 read density를 사용합니다. RDAF의 단점은 TCM과 유사합니다 : 모든 thread가 총 순서로 순위가 매겨집니다. 높은 MPKC를 가진 thread가 낮은 MPKC를 가진 thread에 의해 오랜 시간 차단될 수 있습니다.
+
+---
+
+##### Request-Based Marking
+
+Ghose 등 [2013]의 치명성 인식 scheduler는 ROB (Reorder Buffer) head를 차단하는 부하가 치명적이라는 기준을 기반으로 합니다. processor 측의 commit block predictor (CBP)는 이전에 ROB를 차단한 부하를 추적하고 부하가 발생할 때 부하의 치명성을 예측합니다. 다섯 가지 CBP table이 평가되었습니다 : Binary, BlockCount, LastStallTime, MaxStallTime 그리고 TotalStallTime. Binary Predictor는 각 memory controller의 request entry 당 추가 bit를 필요로 하며, 다른 predictor들은 request entry당 적어도 14bit가 필요하며 가장 치명성이 높은 request를 scheduling하기 위한 복잡한 논리를 필요로 합니다. Ghose 등 [2013]는 치명성을 기반으로 한 predictor가 낮은 경쟁 상태에서 잘 수행되는 것을 보여주었으며, 한편 DMPS는 TCM 및 PARBS와 같이 thread heterogeneity와 높은 경쟁 상태를 대상으로 설계되었습니다. 따라서 치명성 인식 predictor은 DMPS와 별개입니다. 또한 DMPS는 치명성 인식 scheduler의 starving problem of request를 해결할 수 있습니다. 
+
+Hur와 Lin [2004]의 AHB는 두 가지 기본적인 history-based arbiter를 도입합니다. 하나는 read와 write의 비율을 맞추는 arbiter로, reorder queue 내에서 병목 현상을 피하는 경향이 있으며, 다른 하나는 schedule된 operation의 예상 latency을 최소화하기 위한 것입니다. 두 목표는 확률적인 방식으로 두 arbiter 사이를 주기적으로 전환함으로써 부분적으로 달성될 수 있습니다. AHB는 다른 명령 pattern을 최적화하기 위한 여러 history-based arbiter를 구현하여 알 수 없는 command pattern과 일치시킬 수 있으며, 주기적으로 가장 적합한 arbiter를 선택할 수 있습니다. AHB는 간단하며 단일 thread system의 DDR2 DRAM 처리량을 향상시킬 수 있지만, multithread system에서는 memory interference 문제를 해결할 수 없습니다. 높은 속도의 DDR3/4 환경에서 AHB의 명령 pattern arbiter는 write drain policy 때문에 효과적이지 않을 수 있습니다. 
+
+RLMS [Ipek et al. 2008]와 MORSE [Mukundan과 Martínez 2012]는 강화 학습의 Q-learning 알고리즘을 적용하여 scheduling policy를 최적화하기 위해 학습하고 장기적인 성능을 극대화하기 위해 실시간으로 조정할 수 있습니다. 그러나 대규모 Q-값의 존재로 인해 매우 높은 HW overhead를 가집니다. 
 
 ---
 
 ### 추가설명
 
-(1) Memory Controller에서 공정성의 의미
+**(1) Memory Controller에서 공정성의 의미**
 
 - 여러 프로세스나 application들이 공유하는 메모리 resource에 대한 access를 공정하게 조절하는 것을 의미함. 공정성을 보장한다는 것은, 어떤 프로세스나 application이 메모리 resource를 독점하거나 다른 프로세스의 메모리 access를 방해하지 않도록 하는 것을 말함. 
 
-(2) Memory Intensity
+**(2) Memory Intensity**
 
 - 메모리에 대한 access 빈도나 메모리 사용량을 나타내는 지표임. 즉, 프로그램 또는 작업이 주어진 시간 동안 얼마나 많은 메모리 access를 요청하는지를 나타내는 것을 의미할 수 있음. 고메모리 강도면 메모리 시스템에 더 큰 부하를 주는 경향이 있으며, 메모리 scheduling이나 resource allocation에서 특별한 전략이 필요할 수 있음. 
 
-(3) Application-Unaware
+**(3) Application-Unaware**
 
 - 특정 application의 특성이나 요구 사항을 고려하지 않고 동작하는 시스템이나 메커니즘을 말함. 예를 들어, Application-Unaware memory scheduler는 실행 중인 application의 특정 메모리 request 사항이나 동작 패턴을 고려하지 않고 메모리 access request를 처리함. 일반적으로 고려해야할 변수나 조건이 적기 때문에 단순하지만, 다양한 application의 특성에 따라 최적의 성능을 제공하기 어려울 수 있음. 
 
-(4) Application-Aware
+**(4) Application-Aware**
 
 - 특정 application의 특성이나 요구 사항을 인식하고 그에 따라 동작하는 시스템이나 메커니즘을 말함. 실행 중인 application의 특정 요구 사항, 동작 패턴, 또는 성능 목표를 고려하여 최적화된 성능을 제공하려고 함. 이러한 접근 방식은 각 application의 개별적인 요구 사항에 맞게 자원을 할당하거나 우선순위를 조정하여 전체 시스템의 효율성을 향상시키는 데 도움이 됨. 
+
+**(5) Memory Interference**
+
+- 다중 processing 환경에서 여러 process 또는 thread가 동시에 memory resource(특히 main memory와 cache)에 access할 때 발생하는 현상을 가리킴. 이러한 상황에서 한 process의 memory access가 다른 process의 memory access에 영향을 미칠 수 있음.
+
+- 특징
+  - Contention : 여러 process 또는 thread가 동시에 memory resource에 access하려고 할 때 경쟁 상황이 발생. 이로 인해 access latency가 발생할 수 있음. 
+  - Cache Pollution : 한 process의 memory access가 다른 process의 data를 cache에서 제거하는 경우 cache pollution이 발생. 이로 인해 다음에 그 data에 access할 때 memory latency가 증가하게 됨. 
+  - Row Buffer Conflict in DRAM : DRAM에서, 특정 row에 access하려는 request가 다른 row에 access 중인 경우 row buffer conflict가 발생. 이로 인해 추가적인 latency가 발생. 
