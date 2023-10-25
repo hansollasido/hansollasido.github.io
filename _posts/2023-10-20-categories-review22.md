@@ -156,6 +156,6 @@ RLMS [Ipek et al. 2008]와 MORSE [Mukundan과 Martínez 2012]는 강화 학습�
 - 다중 processing 환경에서 여러 process 또는 thread가 동시에 memory resource(특히 main memory와 cache)에 access할 때 발생하는 현상을 가리킴. 이러한 상황에서 한 process의 memory access가 다른 process의 memory access에 영향을 미칠 수 있음.
 
 - 특징
-  - Contention : 여러 process 또는 thread가 동시에 memory resource에 access하려고 할 때 경쟁 상황이 발생. 이로 인해 access latency가 발생할 수 있음. 
-  - Cache Pollution : 한 process의 memory access가 다른 process의 data를 cache에서 제거하는 경우 cache pollution이 발생. 이로 인해 다음에 그 data에 access할 때 memory latency가 증가하게 됨. 
-  - Row Buffer Conflict in DRAM : DRAM에서, 특정 row에 access하려는 request가 다른 row에 access 중인 경우 row buffer conflict가 발생. 이로 인해 추가적인 latency가 발생. 
+  - **Contention** : 여러 process 또는 thread가 동시에 memory resource에 access하려고 할 때 경쟁 상황이 발생. 이로 인해 access latency가 발생할 수 있음. 
+  - **Cache Pollution** : 한 process의 memory access가 다른 process의 data를 cache에서 제거하는 경우 cache pollution이 발생. 이로 인해 다음에 그 data에 access할 때 memory latency가 증가하게 됨. 
+  - **Row Buffer Conflict in DRAM** : DRAM에서, 특정 row에 access하려는 request가 다른 row에 access 중인 경우 row buffer conflict가 발생. 이로 인해 추가적인 latency가 발생. 
