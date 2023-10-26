@@ -133,6 +133,65 @@ RLMS [Ipek et al. 2008]와 MORSE [Mukundan과 Martínez 2012]는 강화 학습�
 
 ---
 
+### Mechanism
+
+#### Simple Memory Occupancy to Measure Interference
+
+본 논문은 memory interference를 유발하는 능력을 측정하기 위하여 memory occupancy를 사용했습니다. memory occupancy에 관련된 수학적 정의는 아래 식 (1)에 있습니다. 분자는 마지막 양자에서 application에 제공된 read request의 수이며, 분모는 마지막 양자에서 각 application당 제공된 평균 read request의 수입니다. 그러므로, memory occupancy는 application 자체와 동시에 실행 중인 다른 application에 의해 결정됩니다. 
+
+<center>
+
+$MO_i = \frac{ReqCnt_i}{\sum^{N_{core}}_{j=1}ReqCnt_j/N_{core}}=\frac{N_{core}\times MPKC_i}{\sum^{N_{core}}_{j=1}MPKC_j}$
+
+<p>
+
+</p>
+
+, where $MO_i$ is the memory occupancy of application $i$, $ReqCnt_i$ is the number of read requests served from application $i$ in a quantum, $N_{core}$ is the number of currently executing applications, and $MPKC_i$ is the misses per kilo cycles of application $i$ in a quantum.
+</center>
+
+memory occupancy는 반드시 MPKC를 기반으로 합니다. interference에 취약성의 대리자로서, MPKC는 HW에서 구현하기 간단하며 다른 application과 함께 실행될 때 memory bandwidth를 점유하는 능력을 직접 반영합니다. MPKC는 MPKI, row-buffer 지역성, bank-level parallelism, 또는 다른 processor 측 behavior의 결과입니다. 반면 MPKI는 application의 memory intensity만을 나타냅니다. MPKI를 사용하는 scheduler에서 row-buffer 지역성처럼 다른 metric도 사용될 것 입니다. interference를 유발하는 application의 능력을 결정하기 위하여, 이 metric의 함수는 조심히 설계되어야 합니다. FATM에서는 $P_i=\alpha\times WT_i + \beta \times AST_i + \gamma$입니다. TCM에서 bandwidth 사용은 thread clustering에서 사용되고 MPKI, row-buffer 지역성, bank-level parallelism은 application의 우선순위를 결정하기 위해 분류됩니다. BLISS는 application에서 제공된 연속 read request의 최대 수를 모니터링하고 최대 수가 blacklist threshold 값을 초과할 때 application을 blacklist로 지정합니다. 따라서 interference을 일으키는 application이 blacklist로 지정되기 전에 제공된 read request의 수를 제어할 수 없습니다. 그러나, MPKC는 application에서 제공된 read request의 총 수를 사용하며 이러한 문제가 없습니다. 따라서 MPKC는 bandwidth 사용을 제어할 수 있으며, 복잡성을 낮추려는 scheduler에게 MPKI보다 적합합니다. 
+
+bandwidth 사용 관점에서 보면, 높은 MPKC를 가진 application은 더 많은 interference를 유발하는 경향이 있습니다. memory interference를 완화하기 위하여, DMPS는 동적으로 application을 여러 priority level로 할당합니다. *ReqPL*은 epoch애서 level 당 평균 MPKC로, quantum 내의 모든 application의 long-term MPKC QReqCnt와 구성 가능한 parameter MOPL에 의해 결정됩니다. *EReqCnt*는 한 epoch에서 short-term MPKC를 의미합니다. application의 priority level은 EReqCnt를 미리 정해진 ReqPL의 배수인 threshold과 비교하여 결정됩니다. 
+
+---
+
+#### Coarse-Grain Synchronization to Group Applications
+
+Algorithm 1은 상세하기 동기화의 과정을 보여줍니다. 동기화는 모든 quantum마다 수행되며, $QReqCnt_{i,j}$의 누적, application의 group, 그리고 level당 threshold $ReqPL$의 update를 포함합니다. 첫 번째로, $QReqCnt_{i,j}$, channel $j$로 부터 온 application $i$의 read request의 횟 수는 각 quantum의 끝에서 다양한 memory controller에서 부터 metacontroller에까지 전달됩니다. $ReqCnt_i$는 $QreqCnt_{i,j}$의 모든 channel 전반에 걸친 합이며 $TotalReqCnt$는 $ReqCnt_i$의 application 전반에 걸친 합입니다. 
+
+두 번째로, Algorithm 1에서 $MOPL$는 priority level 당 memory occupancy 값이며 Algorithm 2에서 $PLNUM$는 priority level의 수 입니다. $MOPL$과 $PLNUM$은 사용자에 따라 configured될 수 있습니다. application을 다양한 level로 효과적으로 분리하기 위해서 $MOPL$과 $PLNUM$의 곱은 대략 1입니다. DMPS에서는 memory occupancy가 $MOPL$보다 큰 application은 bandwidth에 민감한 것으로 취급되며, 다른 application은 latency 민감한 것으로 취급됩니다. memory occupancy를 나눗셈으로 계산하는 것은 복잡하고 비용이 많이 들기 때문에 $MOPL$ 대신 read request 수를 기준으로 application을 분류하기 위해 $GroupTh$를 사용합니다. $GroupTh$는 서비스된 read request 수를 기준으로 한 해당 값입니다. 현재 quantum에서 $ReqCnt$가 $GroupTh$보다 큰 application은 bandwidth 민감한 것으로 표시되고, 그 외의 application은 latency 민감한 것으로 표시됩니다. 다음 quantum에서 application의 group 상태인 $NxtGroup$은 이전 두 가지 분류인 $PreGroup$과 $CurGroup$에 의해 예측됩니다. application은 과거 두 개의 quantum에서 bandwidth 민감하게 분류되었다면 bandwidth 만감하게 예측됩니다. 그렇지 않으면 application은 latency 민감하게 예측됩니다. 과거 두 가지 분류를 고려하는 이 two-bit predictor은 최근 분류를 직접 사용하는 것과 비교하여 더 안정적이고 정확하며, latency 민감한 application에게 latency 민감 group에 머무를 기회를 더 많이 제공합니다. 
+
+세 번째로, $ReqPL$은 해당 quantum에서 $MOPL$과 $TotalReqCnt$로 인해 결정됩니다. $ReqPL$은 다음 quantum에서 application의 동적 priority를 update하기 위한 level당 threshold로 사용됩니다. 현재 quantum에서 많은 read request가 제공되면 memory interference가 심하며, $ReqPL$의 값이 높아집니다. 높은 $ReqPL$은 더 낮은 MPKC를 가진 application에게 높은 priority에 머무를 기회를 더 많이 제공하여 memory interference를 완화합니다. 마지막으로 metacontroller는 application의 예측된 group 상태인 $NxtGroup$과 level 당 threshold인 $ReqPL$을 각 memory controller에 보냅니다. DMPS에서 quantum의 길이는 ATLAS와 TCM과 마찬가지로 백만 cycle로 설정되며, 이는 application의 memory access behavior의 변화를 감지하기에 충분히 짧고, metacontroller와 여러 memory controller간의 통신 overhead를 최소화하기에 충분히 길게 설정됩니다. 
+
+<p align="center"><img src="../../assets/images/102601.png" width="700px" height="500px" title="DMPS" alt="DMPS" ><img></p>
+
+<p align="center"><img src="../../assets/images/102602.png" width="700px" height="700px" title="DMPS" alt="DMPS" ><img></p>
+
+---
+
+#### Fine-Grain Dynamic Multilevel Priority 
+
+<fig 3(a)>는 DMPS의 간단한 구조를 보여줍니다. memory occupancy monitor에서 각 application은 제공된 read request 수를 저장하기 위해 두 개의 counter가 필요합니다 : quantum을 위한 long-time counter인 $QReqCnt$, 그리고 epoch를 위한 short-time counter $EReqCnt$입니다. long-time counter인 $QreqCnt$는 매 quantum의 끝에서 metacontroller로 동기화를 위해 전송되고 short-time counter인 $EReqCnt$는 매 사이클마다 multi-level comparator로 전송됩니다. multilevel comparator은 multiple priority level에 제공된 read request의 수로부터 mapping function으로 수행됩니다. <fig 3(b)>는 세 가지 priority level을 가진 DMPS의 mapping function을 보여주며, 더 높은 priority level은 더 높은 priority에 해당합니다. epoch에서 application의 priority level을 결정하려면 short-time counter인 $EReqCnt$를 $ReqPL$ 및 $2\times ReqPL$과 비교해야 합니다. 여기서 $ReqPL$은 priority level 당 제공된 read request 수입니다. $EReqCnt$가 $ReqPL$보다 작을 때, application은 초기 priority level에 있습니다. $EReqCnt$가 $2\times ReqPL$보다 작지 않을 때, application의 priority level은 1입니다. 그 외의 상황에서는 application의 priority level은 2입니다. Algorithm 2는 세부적인 과정을 보여주고 세밀한 동적 multilevel priority process를 보여줍니다. 
+
+<p align="center"><img src="../../assets/images/102603.png" width="700px" height="700px" title="DMPS" alt="DMPS" ><img></p>
+
+mapping function은 두 특징을 가집니다. 첫 번째로, 높은 system 성능을 제공하기 위해 낮은 MPKC를 가진 대부분의 application은 높은 MPKC를 가진 application보다 더 우선순위가 높습니다. MPKC가 낮은 application은 memory request을 거의 생성하지 않으므로 빠른 진행이 가능한 높은 잠재력을 가질 가능성이 있습니다. quantum에서 먼저 bandwidth 민감한 group의 application보다 latency 민감 group의 application에게 priority가 주어집니다. epoch에서 작은 $EReqCnt$를 가진 application은 일시적으로 latency 민감하게 처리될 수 있으며, 그 중 대부분은 동일한 group 내의 다른 application보다 priority가 부여됩니다. 두 번째로, 동일한 group 내의 application은 처음에는 동일한 priority level을 가집니다. application에서 제공된 read request 수가 미리 정해진 threshold보다 초과하면, application의 priority level이 memory interference 완화하기 위해 한 level 낮아집니다. 따라서 유사한 $EReqCnt$를 가진 application은 동일한 priority level에 있습니다. 낮은 priority level에 있는 application은 보통 bandwidth 민감하며, 동일한 priority level은 memory bandwidth의 공정한 분배를 보장할 수 있습니다. 따라서 mapping function은 DMPS가 모든 application을 상대적으로 균일하고 빠른 속도로 진행시켜 고성능 및 공정성을 제공합니다. 
+
+epoch 길이는 kilo cycle로, quantum 길이보다 훨씬 짧습니다. 세밀한 epoch의 주요 기능 중 하나는 $ReqPL$의 값을 작게 유지하고 동적 priority 효과를 보장하는 것입니다. $ReqPL$이 너무 클 경우, application의 priority를 낮추는 데 시간이 오래 걸리며, 동적 priority가 정적 priority로 약화될 수 있어 높은 불공정성과 starving을 유발할 수 있습니다. 또한 세밀한 epoch의 다른 기능은 starving을 피하는 것입니다. 낮은 priority level의 application의 request가 현재 epoch에서 차단되면, 다음 epoch의 시작에서 application의 동적 priority가 초기 priority level로 재설정되며, request는 나이가 많기 때문에 동일한 priority level의 request 사이에서 priority level가 부여됩니다. 따라서 낮은 priority level의 request이 시간적으로 처리됩니다. 
+
+---
+
+#### Summary : DMPS Prioritization Rules
+
+Algorithm 3은 application으로 부터 온 memory request를 어떻게 DMPS가 schedule하는 지에 관련하여 요약했습니다. 
+
+<p align="center"><img src="../../assets/images/102604.png" width="700px" height="700px" title="DMPS" alt="DMPS" ><img></p>
+
+같은 bank에 두 memory request를 위해, 높은 priority level의 application으로 부터 request가 먼저 우선 처리됩니다. 두 application이 같은 priority level로 부여될 때, row-hit request가 먼저 우선처리 됩니다. 만일 동일하다면 오래된 request가 우선처리됩니다. 
+
+---
+
 ### 추가설명
 
 **(1) Memory Controller에서 공정성의 의미**
@@ -163,3 +222,9 @@ RLMS [Ipek et al. 2008]와 MORSE [Mukundan과 Martínez 2012]는 강화 학습�
 **(6) Application의 의미**
 
 - 컴퓨터 프로그램이나 프로세스를 의미함. 멀티코어나 멀티스레드 환경에서 여러 application(또는 작업, task, process)이 동시에 실행될 수 있음. 이러한 application들은 resource(memory, CPU, I/O 등)에 대한 access를 경쟁적으로 수행하며, 이로 인해 서로 간의 interference나 performance 저하가 발생할 수 있음. application의 특성에 따라 scheduler는 효율적인 memory access 순서를 결정하게 됨.
+
+**(7) memory occupancy의 의미**
+
+- 컴퓨터 시스템에서 메모리 사용량을 나타내는 지표임. 구체적으로, 메모리 내에서 특정 프로세스, application, 또는 data가 차지하는 메모리 공간의 양이나 비율을 의미함. 
+
+ 
