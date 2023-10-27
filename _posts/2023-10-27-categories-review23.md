@@ -41,7 +41,9 @@ Computer Vision에서 AlexNet이 나오면서 deep learning 세계가 다시 펼
 
 #### Large Kernel Attention
 
+Attention mechanism은 adaptive한 선택 과정으로 생각하면 됩니다. 즉, 차별적인 특징과 자동으로 input feature에 속한 noisy response를 무시하죠. attention mechanism의 주요 단계는 다른 부분의 중요성을 알려주는 attention map을 생산하는 단계입니다. 이러한 단계를 거쳐 다른 특징 간의 관계를 학습할 수 있습니다.
 
+다른 부분과의 관계를 생성하는 잘 알려진 방법이 두 개 있습니다. 첫 번째로는 self-attention machanism을 사용하여 long-range dependence를 확보하는 것입니다. self-attention을 computer vision에 접목했을 때, 세 가지 단점에 대해서 언급했습니다. 두 번째 단점은 상관관계를 생성하고 attention map을 만들기 위해 large kernel convolution을 사용하는 것입니다. 여전히 여기에 분명히 단점이 있을 겁니다. Large-kernel convolution은 거대한 computational overhead와 parameter의 양을 초래합니다. self-attention과 large kernel convolution의 단점을 극복하고 장점을 사용하기 위해서는 long-range 관계를 얻기 위하여 large kernel convolution operation을 분리해야합니다. <fig 2>를 보면 large kernel convolution을 세 구성원으로 나눈 것을 볼 수 있습니다. : spatial local convolution (depth-wise convolution), spatial long-range convolution (depth-wise dilation convolution), 그리고 a channel convolution (1x1 convolution). 
 
 ---
 
