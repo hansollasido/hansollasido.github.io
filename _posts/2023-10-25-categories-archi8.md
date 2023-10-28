@@ -82,3 +82,38 @@ sequential part가 0.1%의 비율을 가져야 한다는 것임.
 - 100 processors
   - Time = $10 \times t_{add} + 100/100 \times t_{add} = 11 \times t_{add}$
   - Speedup = $110/11 = 10$ (10% of potential)
+
+resource가 많다고 linear하게 성능이 좋아지는 것은 아니나, parallel한 부분이 많으면 성능이 linear과 비슷하게 증가할 수 있음. 
+
+**Instruction and Data Stream**
+
+- SISD, SIMD, MISD, MIMD가 있음
+
+**SIMD**
+
+- Operate elementwise on vectors of data
+  - Multiple data elements in 128-bit wide registers
+- All processors execute the same instruction at the same time
+  - Each with different data address, etc
+- Simplifies synchronization
+- Reduced instruction control hardware
+- Works best for highly data-parallel applications
+
+딥러닝 가속기로 많이 쓰임
+
+**Multithreading**
+
+좋은 블로그 자료 [링크](https://velog.io/@gil0127/%EC%8B%B1%EA%B8%80%EC%8A%A4%EB%A0%88%EB%93%9CSingle-thread-vs-%EB%A9%80%ED%8B%B0%EC%8A%A4%EB%A0%88%EB%93%9C-Multi-thread-t5gv4udj)
+
+- Performing multiple threads of execution in parallel
+  - Replicate registers, PC, etc
+  - Fast switching between threads
+- Fine-grain multithreading
+  - Switch threads after each cycle
+  - Interleave instruction execution
+  - If one thread stalls, others are executed
+- Coarse-grain multithreading
+  - Only switch on long stall
+  - Simplifies hardware, but doesn't hide short stalls
+
+  
