@@ -31,6 +31,8 @@ Scalability는 resource에 비례해서 성능이 올라가는 지에 관련된 
 
 대부분 multiple processor (cores)로 이뤄져 있는 컴퓨터 체계임. 
 
+---
+
 **Hardware and Software**
 
 - Hardware
@@ -42,6 +44,8 @@ Scalability는 resource에 비례해서 성능이 올라가는 지에 관련된 
   - Concurrent
 
 HW는 직렬, 병렬이고 SW는 순차적, 병행적임. SW는 병렬적으로 하는 것이 아닌 병행적으로 처리하기 때문에 HW가 병렬적이라고 해도 SW에서는 다를 수 있음. 항상 coefficient한 HW와 SW를 봐야함. 
+
+---
 
 **Parallel Programming**
 
@@ -57,6 +61,8 @@ HW는 직렬, 병렬이고 SW는 순차적, 병행적임. SW는 병렬적으로 
 
 Core를 4개 쓴다고 4배 성능이 좋아지지 않음. 그리고 여러 문제점이 있음.
 
+---
+
 **Amdahl's Law**
 
 - Sequential part can limit speedup
@@ -67,6 +73,8 @@ Core를 4개 쓴다고 4배 성능이 좋아지지 않음. 그리고 여러 문�
   - Solving : $F_{parallelizable} = 0.999$
 
 sequential part가 0.1%의 비율을 가져야 한다는 것임.
+
+---
 
 **Scaling Example**
 
@@ -85,9 +93,13 @@ sequential part가 0.1%의 비율을 가져야 한다는 것임.
 
 resource가 많다고 linear하게 성능이 좋아지는 것은 아니나, parallel한 부분이 많으면 성능이 linear과 비슷하게 증가할 수 있음. 
 
+---
+
 **Instruction and Data Stream**
 
 - SISD, SIMD, MISD, MIMD가 있음
+
+---
 
 **SIMD**
 
@@ -100,6 +112,8 @@ resource가 많다고 linear하게 성능이 좋아지는 것은 아니나, para
 - Works best for highly data-parallel applications
 
 딥러닝 가속기로 많이 쓰임
+
+---
 
 **Multithreading**
 
@@ -116,4 +130,48 @@ resource가 많다고 linear하게 성능이 좋아지는 것은 아니나, para
   - Only switch on long stall
   - Simplifies hardware, but doesn't hide short stalls
 
-  
+---
+
+**Modeling Performance**
+
+- Assume performance metric of interest is achievable GFLOPs/sec
+  - Measured using computational kernels from Berkeley Design Patterns
+- Arithmetic intensity of a kernel
+  - FLOPs per byte of memory accessed
+- For a given computer, determine
+  - Peak GFLOPS (from data sheet)
+  - Peak memory bytes/sec (using Stream benchmark)
+
+FLOPS = FLOPs/sec, FLOPs = Floating Point Operations
+
+---
+
+**Roofline Diagram**
+
+<p align="center"><img src="../../assets/images/23102901.jpg" width="500px" height="500px" title="Parallel processor" alt="Parallel processor" ><img></p>
+
+---
+
+**Optimizing Performance**
+
+<p align="center"><img src="../../assets/images/23102902.jpg" width="300px" height="300px" title="Parallel processor" alt="Parallel processor" ><img></p>
+
+- Optimize FP performance
+  - Balance adds & multiplies
+  - Improve superscalar ILP and use of SIMD instructions
+- Optimize memory usage
+  - Software prefetch
+    - Avoid load stalls
+  - Memory affinity
+    - Avoid non-local data accesses
+
+---
+
+**Optimizing Performance**
+
+- Choice of optimization depends on arithmetic intensity of code
+- Arithmetic intensity is not always fixed
+  - May scale with problem size
+  - Caching reduces memory accesses
+    - Increases arithmetic intensity
+    

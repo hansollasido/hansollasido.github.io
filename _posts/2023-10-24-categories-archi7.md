@@ -39,6 +39,8 @@ processor의 virtual address 중, physical address에 mapping되지 못한 addre
 
 <p align="center"><img src="../../assets/images/102402.png" width="500px" height="500px" title="VM" alt="VM" ><img></p>
 
+---
+
 **Page Tables**
 
 - Stores placement information
@@ -50,6 +52,9 @@ processor의 virtual address 중, physical address에 mapping되지 못한 addre
 - If page is not present
   - PTE can refer to location in swap space on disk 
 
+
+---
+
 **Translation Using a Page Table**
 
 <p align="center"><img src="../../assets/images/102403.png" width="500px" height="500px" title="VM" alt="VM" ><img></p>
@@ -57,6 +62,8 @@ processor의 virtual address 중, physical address에 mapping되지 못한 addre
 Page table을 두어서 Virtual page number를 Physical page number로 translation한다.
 
 VPN과 PFN이 있다. VPN은 Virtual page number의 약자이고 PFN은 Physical frame number의 약자이다. 
+
+---
 
 **Translation Example**
 
@@ -79,6 +86,8 @@ VPN과 PFN이 있다. VPN은 Virtual page number의 약자이고 PFN은 Physical
 
 - Page table size : $2^{20}\times(8+8)$
 
+---
+
 **Virtual Memory Performance**
 
 - Example
@@ -94,6 +103,8 @@ VPN과 PFN이 있다. VPN은 Virtual page number의 약자이고 PFN은 Physical
 
 - Page replacement 알고리즘이 성능을 좌우함. Page fault가 일어나면 안돼.
 
+---
+
 **Replacement and Writes**
 
 - To reduce page fault rate, prefer least-recently used (LRU) replacement
@@ -106,6 +117,8 @@ VPN과 PFN이 있다. VPN은 Virtual page number의 약자이고 PFN은 Physical
   - Use write-back (Write back은 cache에 쓰여질 때 바로 main memory에 쓰여지지 않고, 어떤 조건에서만 쓰여짐)
   - Dirty bit in PTE set when page is written
 
+---
+
 **Page size**
 
 - Small page sizes
@@ -115,6 +128,8 @@ VPN과 PFN이 있다. VPN은 Virtual page number의 약자이고 PFN은 Physical
 - Large page sizes
   - pros : small page table, small page fault handling overheads
   - cons : more internal fragmentation, worse memory utilization
+
+---
 
 **Fast Translation Using a TLB**
 
@@ -130,6 +145,8 @@ VPN과 PFN이 있다. VPN은 Virtual page number의 약자이고 PFN은 Physical
 
 <p align="center"><img src="../../assets/images/102501.png" width="300px" height="300px" title="VM" alt="VM" ><img></p>
 
+---
+
 **TLB Missess**
 
 - If page is in memory
@@ -144,6 +161,6 @@ VPN과 PFN이 있다. VPN은 Virtual page number의 약자이고 PFN은 Physical
 
 즉, memory에 없으면 disk에서 찾아본다는 얘기임. 
 
-<p align="center"><img src="../../assets/images/102502.png" width="300px" height="300px" title="VM" alt="VM" ><img></p>
+<p align="center"><img src="../../assets/images/102502.png" width="500px" height="500px" title="VM" alt="VM" ><img></p>
 
 
