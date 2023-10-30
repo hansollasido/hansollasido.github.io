@@ -192,6 +192,91 @@ Algorithm 3은 application으로 부터 온 memory request를 어떻게 DMPS가 
 
 ---
 
+#### Support for Software Control
+
+DMPS는 system software에서 할당된 weights를 지원하고 그러므로 scheduling 동안에 높은 weigth를 가진 application을 우선처리 할 수 있습니다. TCM은 Memory access behavior를 고려하지 않고 큰 가중치를 가진 application에 무작위로 우선순위를 부여하는 것이 시스템 성능과 공정성을 심각하게 저하시킬 수 있음을 보여주었습니다. 따라서, DMPS는 group의 범위 내에서 SW 가중치를 존중합니다. weight가 작으면서 latency에 민감한 application들은 큰 weight를 가진 bandwidth 민감한 application보다 더 먼저 우선처리 됩니다. 이러한 것을 하기 위해서 metacontroller는 grouping할 때, software weights를 신경쓰지 않습니다. DMPS는 SW weight를 포함시키기 위해, 서로 다른 application에 서로 다른 level 당 threshold을 할당함으로써 구현할 수 있습니다. application의 level당 threshold는 metacontroller의 level 당 threshold와 해당 SW weight의 곱입니다. 높은 level당 threshold의 뜻은 application이 우선순위 level이 낮아지기 전에 더 많은 read request를 제공할 수 있다는 것입니다. 
+
+<center>
+
+$ReqPL_i=ReqPL\times SWWeight_i$
+
+</center>
+
+---
+
+### Implementation and hardware cost
+
+DMPS는 memory occupancy를 관제하고, 동적인 multilevel priority를 지원하기 위하여 추가적인 logic과 storage를 FR-FCFS보다 더 만들어줘야합니다. <Table I>에서 24-core와 4-channel system에서 memory controller당 storage와 logic cost를 보여줍니다. 
+
+<p align="center"><img src="../../assets/images/23103001.png" width="500px" height="300px" title="DMPS" alt="DMPS" ><img></p>
+
+memory occupancy를 관제하기 위하여, 각 application은 두 개의 counter를 두어 read request가 served된 횟수를 기록합니다. : 한 epoch를 위한 short-time counter 그리고 한 quantum을 위한 long-time counter. 같은 width의 adder은 각 counter을 업데이트하는데 필요합니다. 모든 request가 row hit일 때 wort case 경우, 두 개의 counter에 대한 최대 가능한 값은 epoch와 quantum의 길이를 최소 scheduling distance $t_{CCD}$로 나눈 결과입니다. 그러므로, 두 counter의 너비는 각각 9 bits와 16 bits입니다. 동적 multilevel priority를 지원하기 위해, DMPS는 처음의 우선순위를 저장하기 위하여, application당 1-bit register가 필요하고, 동적인 우선순위를 저장하기 위해 application 당 2-bit register 그리고 threshold $ReqPL$을 저장하기 위한 9-bit register가 필요합니다. application의 동적 priority를 short-time counter를 threshold $ReqPL$와 $2\times ReqPL$과 비교해서 모든 cycle에 업데이트를 진행합니다. 그래서 두 개의 9-bit comparators 가 각 application당 필요하게 됩니다. 
+
+---
+
+### Methodology and metric
+
+#### System configuration
+
+DMPS를 이전 5개의 scheduler와 같이 평가했는데, 사용한 memory system simulator은 USIMM입니다. 
+
+<p align="center"><img src="../../assets/images/23103002.png" width="500px" height="300px" title="DMPS" alt="DMPS" ><img></p>
+
+
+<p align="center"><img src="../../assets/images/23103003.png" width="500px" height="300px" title="DMPS" alt="DMPS" ><img></p>
+
+---
+
+#### Evaluation Metrics
+
+평가 지표가 필요해서 가져와봤습니다.
+
+multiprogrammed 환경에서 흔히 사용되는 평가지표로, system performance를 측정하기 위한 weighted speedup, fairness를 측정하기 위해 maximum slowdown, fairness와 system performance의 균형을 측정하기 위한 harmonic speedup이 있습니다. 
+
+<center>
+
+$Weighted \ Speedup = \sum^n_{i=1} \frac{IPC^{shared}_i}{IPC^{alone}_i}$
+
+<p>
+
+</p>
+
+$Harmonic Speedup = \frac{N}{\sum^n_{i=1} \frac{IPC^{alone}_i}{IPC^{shared}_i}}$
+
+<p>
+
+</p>
+
+$Maximum Slowdown = max_i\frac{IPC^{alone}_i}{IPC^{shared}_i}$
+
+</center>
+
+여기서 $IPC^{alone}_i$는 혼자 작동할 때, application $i$에 해당하는 instructions per cycle이며, $IPC^{shared}_i$는 다른 application과 같이 동작할 때, application $i$에 해당하는 instructions per cycle을 뜻합니다. 
+
+<p align="center"><img src="../../assets/images/23103004.png" width="700px" height="500px" title="DMPS" alt="DMPS" ><img></p>
+
+
+<p align="center"><img src="../../assets/images/23103005.png" width="700px" height="500px" title="DMPS" alt="DMPS" ><img></p>
+
+<p align="center"><img src="../../assets/images/23103006.png" width="700px" height="500px" title="DMPS" alt="DMPS" ><img></p>
+
+<p align="center"><img src="../../assets/images/23103007.png" width="700px" height="500px" title="DMPS" alt="DMPS" ><img></p>
+
+<p align="center"><img src="../../assets/images/23103008.png" width="700px" height="500px" title="DMPS" alt="DMPS" ><img></p>
+
+---
+
+### Conclusions
+
+본 논문은 새롭고 간단한 동적 multilevel priority 기반 memory access scheduler인 DMPS를 도입했습니다. 가장 이전의 application-aware scheduler는 높은 system 성능과 fairness를 추구하고 per-application ranking mechanism을 사용하여 높은 HW 복잡도와 cost를 초래합니다. 가장 최근의 application-aware scheduler는 HW 복잡도와 비용을 낮추려고 하며, group당 ranking 방식을 사용하여 빠른 scheduling 조치를 취하도록 하고, 이로 인해 시스템 성능과 공정성이 심각하게 저하됩니다. DMPS는 system 성능, fairness 그리고 HW 복잡도 사이의 균형을 제공합니다. memory interference를 유발하는 것을 측정하기 위해 memory occupancy를 도입하여, DMPS는 application을 간단히 두 개의 group을 분류할 수 있습니다. system performance를 향상시키기 위해, latency 민감한 application은 bandwidth 민감한 application보다 우선시 됩니다. application 전반에 fairness를 보장하기 위하여 DMPS는 동적으로 application을 multiple level로 우선순위 처리하고, memory occupancy가 큰 application은 가장 낮은 순위로 처리합니다. 
+
+DMPS를 80 개의 workload로 다른 system configuration에서 평가하였고 이전의 5 개의 scheduler와 비교해보았습니다. 평가 결과, DMPS는 굉장히 높은 시스템 성능과 fairness를 FRFCFS, FRFCFS-Cap 그리고 per-group ranking scheduler BLISS보다 갖췄습니다. per-application ranking scheduler와 비교했을 때, DMPS는 HW 복잡도를 크게 감소시켰으며, 시스템 성능은 미세하게 낮췄지만, 높은 fairness를 달성하였습니다. 
+
+그러므로 본 논문은 DMPS가 높은 system performance와 fairness를 낮은 HW 복잡도로 달성할 수 있으며, 현재나 미래의 multicore system에서도 적합하다는 것에 결론내릴 수 있습니다. 
+
+
+---
+
 ### 추가설명
 
 **(1) Memory Controller에서 공정성의 의미**
