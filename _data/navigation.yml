@@ -18,10 +18,6 @@ main:
 # sidebar navigation (categories)
 # 2022.09.24 sidebar ver2.0 : main-sub version
 categories:
-  - title: "일기"
-    children:
-      - title: "연구 일지"
-        url: /categories/연구 일지/
   # - title: "공부"
   #   children:
       # - title: "컴퓨터 구조"
@@ -47,17 +43,12 @@ categories:
       - title: "Docker"
         url: /categories/Docker/
 
-  - title: "논문 리뷰"
+  - title: "인공지능 리뷰"
     children:
       - title: "컴퓨터 비전"
         url: /categories/컴퓨터 비전/
       - title: "NLP"
         url: /categories/NLP/
-      - title: "PIM"
-        url: /categories/PIM/
-      - title: "DRAM"
-        url: /categories/DRAM/
-      
         
       # - title: "AI 가속기"
       #   url: /categories/AI 가속기/
